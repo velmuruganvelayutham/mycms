@@ -1,0 +1,458 @@
+________________________________
+--------------------------------
+2011-05-26: 3.6 released
+--------------------------------
+
+- Fixed vulnerability reported at http://secunia.com/advisories/42946
+- Added support for page images in blog and RSS
+- Added a parameter to blog to display only pages with a specified tag
+- Added support for Colorbox in the image gallery
+- Links in comments now have the rel=nofollow attribute
+- Added sort option to the include module
+- TinyMCE updated to 3.4.2
+- jQuery updated to 1.6
+- Colorbox updated to 1.3.17
+- Thumbnail creation performed using less memory
+- Added Artisteer support to listmenu
+- Created a new default theme using Artisteer
+
+________________________________
+--------------------------------
+2009-07-02: 3.5 released
+--------------------------------
+
+- IMPORTANT: license changed to GPLv3
+- Fixed to generate relative links almost everywhere
+- Blog module refactored to be able to replace Latest Changes and Most Visited
+- Latest Changes module now looks like Blog and Most Visited
+- Reversed date order in Blog Calendar
+- Added an option to the Comments module to remove the HTML editor
+- Added an RSS feed feature
+- Added a progress bar to the upload page
+
+________________________________
+--------------------------------
+2008-11-06: 3.4.1 released
+--------------------------------
+
+- Fixed incompatibility with Tomcat 5.5.27 and 6.0.18
+- Added Taiwanese translation (contributed by Wu-Jeng Li)
+
+________________________________
+--------------------------------
+2008-09-07: 3.4 released
+--------------------------------
+
+- Added site synchronization to copy a site over another
+- Sites can be protected with password
+- Added a new Spanish translation (contributed by Jose Juan Escudero)
+- Multilanguage dialogs improved
+- Updated Javascript popup
+
+________________________________
+--------------------------------
+2008-08-17: 3.3 released
+--------------------------------
+
+- Added Hungarian, Chinese and Finnish translations
+- Added Google Sitemap generator
+
+________________________________
+--------------------------------
+2008-02-23: 3.2 released
+--------------------------------
+
+- MeshCMS-specific information is now stored in META tags instead of HTML tag
+- Added blog module
+- Added a module to embed code snippets in page (e.g. YouTube videos)
+- Added clean and preview capabilities to the source code editor
+- Added Indonesian Language (translation by Budi Ongkowijaya)
+- Added an option to use Lightbox in the gallery module (contributed by Gilles Hooghe)
+- New tag and property to detect current language
+- Added the ability to fix links in modules for pages from other directories
+- Added captchas to the comment module
+- Added two new parameters to the pagehead tag to remove script and styles from HTML pages
+- New tag to check if the page is in the site map
+- New tag to check if the page is an admin page
+- Return HTTP 301 (moved permanently) for moved pages
+- Added an option to clean (tidy) HTML code on the server
+- Improved searching of moved pages
+- Added two new themes to samples
+- File Manager now allows to view/edit files in another window
+- TinyMCE upgraded to 2.1.3
+- EditArea upgraded to 0.7.0.2
+- Added the <cms:adminpath> tag to get the CMS admin path
+- <cms:listmenu> "path" attribute supports special values "current", "parent" and "root"
+- <cms:info> can now provide some basic system info
+- <cms:moduletitle> gets "pre" and "post" attributes
+- Login menu is not shown if we're performing a static export
+- Default configuration values have been revised and changed
+
+
+________________________________
+--------------------------------
+2007-06-25: 3.1 released
+--------------------------------
+
+- Look&feel refreshed using icons by Mark James (www.famfamfam.com)
+- Added icons of flags for use with the cms:langmenu
+- Links tag improved
+- Added an option to replace resized images with server-generated ones
+- Download module now uses the Download servlet
+- Added support for links and random order to the image gallery
+- Audio and video players now show a list of files when Flash is not installed
+- Automatic home page redirection moved from SetLocale tag to site configuration
+- Added "Internet Sharing" theme by Solucija (ported by Rostislav Palivoda)
+- Added Russian translation (by Rostislav Palivoda and Konstantin Burov)
+- Added recommended settings for the Riva FLV Encoder (video player)
+- Added a parameter to the Comments module to hide comments older than x days.
+- Added a security-related option to forbid JSP files in virtual sites
+
+________________________________
+--------------------------------
+2007-03-01: 3.0.5 released
+--------------------------------
+
+- Added an option to specify a title for each module
+- Added mixed cache strategy (on disk and, when possible, in memory)
+- TinyMCE upgraded to 2.1.0
+
+________________________________
+--------------------------------
+2007-01-15: 3.0.4 released
+--------------------------------
+
+- Fix: wrong format of the tag library descriptor
+- Added a site map iterator to ease creation of menus
+- TinyMCE upgraded to 2.0.9
+- New system theme (enabled by default)
+- XStream always uses UTF-8
+
+________________________________
+--------------------------------
+2007-01-04: 3.0.3 released
+--------------------------------
+
+- IMPORTANT FIX: multibyte charsets (i.e. UTF-8) can be used again
+- Added static export
+- Last modified tag enhanced to allow updating of the page modification time
+- After saving a page, the new version is now shown immediately
+- New tag: search file
+- Enhanced resized thumbnail class
+- EditArea upgraded to 0.6.3.1
+- SimpleMenu and TigraMenu tags and Site Map module now honor submenu hiding
+- Image Gallery improved: better popups
+
+________________________________
+--------------------------------
+2006-11-22: 3.0.2 released
+--------------------------------
+
+- EditArea upgraded to 0.6.2
+- JavaMail upgraded to 1.4 (activation 1.1)
+- Commons-FileUpload upgraded to 1.1.1 (Commons-IO 1.2)
+- XStream upgraded to 1.2.1
+- Browser compatibility improved for some modules (i.e. Mail and Comments)
+- Guide documents features added in 3.0.1
+
+________________________________
+--------------------------------
+2006-11-22: 3.0.1 released
+--------------------------------
+
+- IMPORTANT FIX: the page manager was deleting the whole dir instead of the page only.
+- Added Diary module - similar to Headlines, but allows filtering & sorting by date
+- Make Gallery capable of sorting files by date as well as by name
+- Allow site admins to specify a default for thumbnail quality
+- Added a simple module to display a URL in an IFrame.
+- Basic multilanguage support by allowing users to
+- TinyMCE now includes all plugins and translations
+- Upgrade to SiteMesh 2.3
+- File Manager now highlights items that have a theme associated to
+- Fix: SiteInfo is no longer cleaned up
+
+________________________________
+--------------------------------
+2006-11-06: 3.0 released
+--------------------------------
+
+- Page Manager improved
+- New module: most visited pages
+- Updated Simplified Chinese, French and German translations
+- TinyMCE upgraded to 2.0.8
+- TinyMCE configured to generate valid XHTML
+- TinyMCE enhanced with inline popups, advanced paste and source formatting
+- Bug fixed: the allowHiding attribute had been omitted by the tld file
+- If the upload file can be renamed, it will avoid overwriting another file
+- The Refresh Site Map button won't mark the old map as obsolete
+- Improved cache management and monitoring
+- Default thumbnail quality changed to high
+- Option to view saved page no longer shown for files inside the CMS dir
+- Bug fixed: HTML entities weren't managed correctly in some cases
+- Page manager no longer allows to delete the home page
+- Bug fixed: a user was allowed to create another user with the same username
+- Bug fixed: the page editing icon was shown even for pages that the current user can't edit
+- Bug fixed: editor.js now checks for uninitialized variables
+- EditArea upgraded to 0.6.1
+- XStream upgraded to 1.2 (this solves an issue with non-ASCII characters)
+- Bug fixed: the chat module is working again
+- Modules now have a directory where they can save persistent data
+- Added an icon that points to the help for the currently selected module
+- The comments module now implements a simple check against automated submissions
+
+________________________________
+--------------------------------
+2006-10-13: 3.0 rc 2 released
+--------------------------------
+
+- SiteInfo stored data is now cleaned to forget info about deleted pages
+- Modules can be collapsed in the editor
+- Conversion to HTML entities is now done only for single-byte charsets
+- File Manager no longer modifies file names automatically
+- Function added to the File Manager to remove unsuited characters from file names
+- Added EditArea to have syntax highlighting in the source editor
+- Improved the Page Manager interface
+
+________________________________
+--------------------------------
+2006-09-06: 3.0 rc 1 released
+--------------------------------
+
+- Comments module can send email notifications
+- Added an option to hide subpages in navigation menus (by Hue)
+- Fixed recognition of different charset names (e.g. ANSI_X3.*)
+- Two new modules: audio and video player (both are Flash-based)
+- Experimental support for XStream in pure mode
+- Option to show/hide subpages in navigation menus (by Hue)
+- Added e-mail notifications for the comments module
+
+________________________________
+--------------------------------
+2006-06-22: 3.0 beta 1 released
+--------------------------------
+
+- Added support for multiple sites in a single installation (experimental)
+- Added ALIB to provide nice menus (script modified by Hue Holleran)
+- Added some configuration options to define site information
+- Modules now are contained in separate directories
+- Modules can accept advanced parameters
+- New default theme (based on a design by Andreas Viklund)
+- Some work has been done to have less tables around in the admin area
+- Changed the distribution (meshcms-xxx-bin.zip and meshcms-xxx-src.zip now)
+- Jetty is now supported out-of-the-box, without further configuration
+- The file manager can now copy/duplicate/delete entire directories
+- The file manager now allows to download directories and files as a ZIP file
+- Added Spanish translation (contributed by Raul Herranz)
+- Added German translation (contributed by Dirk Deeken)
+- Added the new ListMenu tag to create menus as HTML unordered lists
+- SimpleMenu and TigraMenu now default to the directory where the theme is applied
+- Fixed a bug in the file manager when the admin directory has been renamed
+- Added the option to define advanced parameters for modules
+- Added chat module (contributed by Pierre Metras)
+- Added other modules: headlines, latest changes and comments
+- TinyMCE updated to 2.0.6.1
+- TinyMCE configuration moved to admin/tinymce_init.js so one can customize it
+- Now if a bad theme prevents loading the control panel, a reload fixes it
+
+________________________________
+--------------------------------
+2006-03-18: 2.4 released
+--------------------------------
+
+- Added French translation (contributed by Pierre Metras)
+- Added Chinese translation
+- Added a dummy theme to workaround a bug in SiteMesh and allow Chinese translation to work
+- Added an option to convert page titles in "Manage Pages" and use HTML entities
+- Added a new mailform field descriptor: "messagebody"
+- Language codes with countries re-added to the language list in the user profile
+- The language list in the user profile is now shown in English to be compatible with most charsets
+- Updated TinyMCE to 2.0.4
+- Fixed synchronization bug within frames in the file manager
+- Added translation for JavaScript messages
+- Added support for SMTP authentication (contributed by Steve Meyfroidt)
+- Added an option to choose a charset
+- Fixed the AdminMenu when used through a proxy
+- Fixed some security issues reported by Hue Holleran
+- Re-added the cache engine since now it is compatible with page charsets
+
+________________________________
+--------------------------------
+2005-12-10: 2.3 released
+--------------------------------
+
+- The mail form no longer sends a copy to the sender (to avoid spam - reported by Matthijs Dekker)
+- New engine for thumbnails
+- Cache engine removed. Il will be replaced with OSCache in a future release
+- Added Dutch translation (contributed by Matthijs Dekker)
+- Some HTML fixes (contributed by Ahmed Mohombe)
+- Added two new mailform field descriptors: "sendername" and "subject"
+- Updated TinyMCE to 2.0.1
+
+________________________________
+--------------------------------
+2005-10-12: 2.2 released
+--------------------------------
+
+- Restored the correct format of file lengths
+- Added 4 minor custom tags
+- HTML capability removed from mail forms to avoid formatting issues
+- Removed some unused code
+- Default charset changed to UTF-8
+- Language list limited to language codes without countries
+- Help is now included in the release and supports multiple languages
+- Some other changes and bug fixes
+
+________________________________
+--------------------------------
+2005-08-04: 2.1 released
+--------------------------------
+
+- Added support for Localization
+- Added Italian translation
+- Some other changes and bug fixes
+
+________________________________
+--------------------------------
+2005-07-25: 2.0.4 released
+--------------------------------
+
+- Cache restored since the issue with mail forms has been fixed
+- Fixed bug that prevented using mail forms without cookies
+- Some cosmetic improvements
+- Added a method to prevent pages from being cached (useful in some module templates)
+- Configuration is no longer saved in XML format to avoid an issue with some Tomcat versions
+
+________________________________
+--------------------------------
+2005-07-16: 2.0.3 released
+--------------------------------
+
+- Cache removed due to an issue with mail forms
+
+________________________________
+--------------------------------
+2005-06-27: 2.0.2 released
+--------------------------------
+
+- Hotlinking improved so when one visits a page there's no check for that session
+- Caching improved to ignore suspicious small files
+
+________________________________
+--------------------------------
+2005-05-25: 2.0.1 released
+--------------------------------
+
+- Added a feature to prevent hotlinking
+- Configuration saved in XML format instead of serialized
+- Help icon is now fetched from the local installation
+- XMenu and XTree have been moved to their own directories
+- Created a new module template to include plain text files
+- Added a class by Brian M. Clapper to format text mail messages
+- Added more buttons to TinyMCE
+
+________________________________
+--------------------------------
+2005-05-22: 2.0 released
+--------------------------------
+
+Too many changes to be listed. Main ones are:
+
+- New site map engine
+- New file manager (compatible with Firefox)
+- New page to edit the site map
+- New method to manage modules
+
+________________________________
+--------------------------------
+2005-02-21: 1.1 beta 3 released
+--------------------------------
+
+- Images are loaded using java.awt.Toolkit to create thumbnails faster
+- Fixed Servlet-Mappings in web.xml
+
+________________________________
+--------------------------------
+2005-01-25: 1.1 beta 2 released
+--------------------------------
+
+- Added an option to SimpleMenu to expand intermediate levels
+- Module locations colored differently in the editor
+- Changed the configuration of TinyMCE in the editor
+- Synchronization of thumbnail creation has been removed
+
+________________________________
+--------------------------------
+2005-01-03: 1.1 beta 1 released
+--------------------------------
+
+- Custom directory index removed
+- Thumbnail creation has been synchronized
+- Modules can be inserted in 3 different locations of the page
+- Added a static export feature (experimental)
+
+________________________________
+--------------------------------
+2004-12-12: 1.0 RC3 released
+--------------------------------
+
+- Added a simple grammar to create more complex mail forms
+- Added a page to customize site menu entries
+- Improved support for hidden pages
+- Changed the way servlets are called (path info is now used)
+- Thumbnail quality improved
+- Removed the "home" and "last" attributes from the "Breadcrumbs" tag
+- Added the "current" attribute to the "Breadcrumbs" tag
+- behavior of com.cromoteca.meshcms.WebApp.getBreadcrumbs(...) changed
+- Welcome pages are no longer listed in the SimpleMenu
+
+________________________________
+--------------------------------
+2004-11-24: 1.0 RC2 released
+--------------------------------
+
+- Added a warning for the session expiration in the editor
+- Filemanager greatly improved
+- Added a home page for the CMS with icons
+- "Last Modified" tag improved
+- Added a new module: parse.jsp
+- Created a new thumbnail for the gallery module (looks like the WinXP thumbnail)
+
+________________________________
+--------------------------------
+2004-11-16: 1.0 RC1 released
+--------------------------------
+
+- Added a style for the includes
+- Directories can be renamed
+- The directory tree in the file manager is now sorted alphabetically
+- Added a "Last Modified" custom tag
+- Fixed the behavior of the "home breadcrumb" in Breadcrumbs.java
+- Added a the option for the sender of a message to receive a carbon copy
+- Better browser cache prevention
+- Added "pre" and "post" text in the Breadcrubms and Links custom tags
+- Modules are now sorted alphabetically in the editor
+- Some interface improvements to integrate the interface in the site
+- Added a configuration page (properties moved to a separate config file)
+
+________________________________
+--------------------------------
+2004-10-16: 0.2.1 released
+--------------------------------
+
+- Re-added sources
+- The web application is now included as a WAR file
+- The download template now shows file sizes
+
+________________________________
+--------------------------------
+2004-10-13: 0.2 released
+--------------------------------
+
+Too many changes to list
+
+________________________________
+--------------------------------
+2004-08-11: 0.1 released
+--------------------------------
+
+First public release of MeshCMS

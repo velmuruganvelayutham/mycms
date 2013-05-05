@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.0//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
+<suppressions>
+    <!-- Example of suppressions. Use this file for the real exceptions-->
+    <suppress checks="JavadocMethod"
+              files="FormField.java" />
+</suppressions>

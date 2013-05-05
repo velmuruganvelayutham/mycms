@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+
+<project name="meshcms" basedir="." default="help">
+
+  <!--  all properties are in build.properties -->
+  <property file="build.properties" /> 
+
+  <!-- import the svnant task -->
+  <import file="${svnant.xml}" />
+
+    <taskdef resource="checkstyletask.properties"
+            classpath="${checkstyle.dir}/${checkstyle.jar}"/>
+
+    <target name="all" description="Build everything - all the distributions">
+        <antcall target="clean"/>
+        <antcall target="dist-src"/>
+        <antcall target="init"/>
+        <antcall target="dist-bin"/>
+    </target>
+
+    <target name="clean" description="Clean all output directories">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+    </target>
+
+    <target name="init" description="Setup properties depended-on by other tasks and all directories">
+    <path id="classpath.path">
+      <pathelement location="${servlet.jar}" />
+      <pathelement location="${classes}"/>
+      <fileset dir="${srcweb}/WEB-INF/lib/">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+    <mkdir dir="${build}" />
+    <mkdir dir="${classes}" />
+    <mkdir dir="${jars}" />
+    <mkdir dir="${dist}" />
+  </target>
+
+  <target name="checkout" depends="init" description="Checks out the project files from the sf.net subversion repository">
+    <svn>
+      <checkout destPath="${basedir}" revision="HEAD" url="${meshcms.svnroot.url}/${svndir}" />
+    </svn>
+  </target>
+
+    <target name="compile" depends="init">
+        <javac target="${javac.target}" source="${javac.source}" srcdir="${srcjava}" destdir="${classes}">
+            <classpath>
+                <path refid="classpath.path"/>
+            </classpath>
+        </javac>
+        <copy todir="${classes}">
+            <fileset dir="${srcjava}">
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- NB: Following task is designed to be called internally only -->
+  <target name="-buildjar" depends="init,compile" if="meshcms.buildjar" description="Build a jar if and only if this is specified in the properties file">
+    <jar basedir="${classes}" destfile="${jars}/${svndir}.jar" />
+    <!-- Delete classes so they'll not be found to be copied into webapp -->
+    <delete dir="${classes}" />
+  </target>
+
+  <target name="webapp" depends="init,compile,-buildjar" description="Build the webapplication, the WAR file">
+    <!-- Build the webapp first -->
+    <copy todir="${webapp}">
+      <fileset dir="${srcweb}">
+        <exclude name="**/.svn/**"/>
+        <exclude name="**/nbproject/**"/>
+      </fileset>
+    </copy>
+    <!-- Attempt to copy .class files (they may have been deleted if building jar -->
+    <copy failonerror="false" todir="${webapp}/WEB-INF/classes">
+      <fileset dir="${classes}" />
+    </copy>
+    <!-- Ensure classes dir of webapp exists -->
+    <mkdir dir="${webapp}/WEB-INF/classes" />
+    <!-- Attempt to copy .jar file - if we're distributing as a jar -->
+    <copy failonerror="false" todir="${webapp}/WEB-INF/lib">
+      <fileset dir="${jars}" />
+    </copy>
+    <!-- Let's build the war file -->
+    <war destfile="${warfile}" webxml="${webapp}/WEB-INF/web.xml">
+      <fileset dir="${webapp}">
+        <exclude name="WEB-INF/web.xml"/>
+      </fileset>
+    </war>
+  </target>
+
+    <target name="samples" depends="webapp" description="Build the sample site">
+        <war destfile="${sampleswar}" webxml="${webapp}/WEB-INF/web.xml">
+            <fileset dir="${webapp}">
+                <exclude name="WEB-INF/web.xml"/>
+                <exclude name="META-INF/context.xml"/>
+            </fileset>
+            <fileset dir="${samples}"/>
+        </war>
+    </target>
+
+  <target name="javadoc" depends="init" description="Create Javadoc HTML files">
+    <javadoc sourcepath="${srcjava}" destdir="${javadoc}" packagenames="*">
+      <classpath><path refid="classpath.path"/></classpath>
+    </javadoc>
+  </target>
+
+    <target name="tagdoc" depends="init" description="Create Tag Library HTML files (with http://taglibrarydoc.dev.java.net/)">
+        <java fork="true" jar="${tlddoc.dir}/tlddoc.jar" failonerror="true">
+        <arg line="-d ${tagdoc}"/>
+        <arg value="${srcweb}/WEB-INF/tlds/meshcms-taglib.tld"/>
+<!--
+        <arg value="${srcweb}/WEB-INF/tlds/sitemesh-decorator.tld"/>
+        <arg value="${srcweb}/WEB-INF/tlds/sitemesh-page.tld"/>
+-->
+        </java>
+    </target>
+
+    <target name="dist-bin" depends="init,webapp,samples,javadoc,tagdoc" description="Build the binary distribution">
+        <!-- Let's build the distribution .zip - need to do get into sub-dir in zip also -->
+        <property name="dist-bin-name" value="meshcms-${version}-bin"/>
+        <zip destfile="${dist}/${dist-bin-name}.zip">
+            <zipfileset file="${readme}" prefix="${dist-bin-name}"/>
+            <zipfileset file="${license}" prefix="${dist-bin-name}"/>
+            <zipfileset file="${chglog}" prefix="${dist-bin-name}"/>
+            <zipfileset dir="${help}" prefix="${dist-bin-name}/help"/>
+            <zipfileset dir="${javadoc}" prefix="${dist-bin-name}/javadoc"/>
+            <zipfileset dir="${tagdoc}" prefix="${dist-bin-name}/tagdoc"/>
+            <zipfileset file="${warfile}" prefix="${dist-bin-name}"/>
+            <zipfileset file="${sampleswar}" prefix="${dist-bin-name}"/>
+        </zip>
+    </target>
+
+    <target name="dist-src" depends="clean,init" description="Build the source distribution (basically the snapshot from the VCS">
+        <property name="dist-src-name" value="meshcms-${version}-src"/>
+        <zip destfile="${dist}/${dist-src-name}.zip">
+            <zipfileset dir="${build-essential}" prefix="${dist-src-name}/build-essential"/>
+            <zipfileset dir="${basedir}/src" prefix="${dist-src-name}/src"/>
+            <zipfileset dir="${basedir}/xdocs" prefix="${dist-src-name}/xdocs"/>
+            <zipfileset dir="${srcweb}" prefix="${dist-src-name}/web"/>
+            <zipfileset dir="${samples}" prefix="${dist-src-name}/samples"/>
+            <zipfileset file="${readme}" prefix="${dist-src-name}"/>
+            <zipfileset file="${license}" prefix="${dist-src-name}"/>
+            <zipfileset file="${todo}" prefix="${dist-src-name}"/>
+            <zipfileset file="${chglog}" prefix="${dist-src-name}"/>
+            <zipfileset file="${basedir}/build.xml" prefix="${dist-src-name}"/>
+            <zipfileset file="${basedir}/build.properties" prefix="${dist-src-name}"/>
+            <!-- <zipfileset dir="${basedir}" prefix="${dist-src-name}" excludes="${build},${dist}"/> -->
+        </zip>
+    </target>
+
+    <target name="checkstyle" description="Run checkstyle report on all the soruces">
+        <property name="checkstyle.data.dir"
+                  location="${build}/checkstyle"/>
+        <property name="checkstyle.data.file"
+                  location="${checkstyle.data.dir}/checkstyle.xml"/>
+        <property name="checkstyle.report.file"
+                  location="${checkstyle.data.dir}/checkstyle.html"/>
+        <property name="checkstyle.xsl.file"
+                  location="${checkstyle.dir}/contrib/checkstyle-noframes.xsl"/>
+        <mkdir dir="${checkstyle.data.dir}"/>
+        <checkstyle config="${build-essential}/checkstyle-checks.xml" failOnViolation="false">
+            <fileset dir="${srcjava}" includes="**/*.java"/>
+            <fileset dir="${srcweb}" includes="**/*.jsp"/>
+            <!-- Use plain only when the number of style issues will be reduced considerably -->
+            <!-- <formatter type="plain"/> -->
+            <formatter type="xml" toFile="${checkstyle.data.file}"/>
+        </checkstyle>
+        <xslt in="${checkstyle.data.file}" out="${checkstyle.report.file}"
+              style="${checkstyle.xsl.file}"/>
+        <echo level="info">Checkstyle report generated to ${checkstyle.report.file}</echo>
+    </target>
+
+    <target name="test" depends="compile" description="Run the JUnit tests">
+        <mkdir dir="${test}"/>
+        <javac target="${javac.target}" source="${javac.source}" srcdir="${srctest}" destdir="${classes}" debug="true">
+            <classpath><path refid="classpath.path"/></classpath>
+            <classpath path="${junit.dir}/${junit.jar}"/>
+        </javac>
+        <!-- Later change this to haltonfailure=true -->
+        <junit haltonfailure="no" showoutput="true">
+            <classpath refid="classpath.path"/>
+            <classpath path="${junit.dir}/${junit.jar}"/>
+            <formatter type="plain"/>
+            <formatter type="xml"/>
+            <batchtest fork="yes" todir="${test}">
+                <fileset dir="${srctest}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="test-report" depends="test" description="Generate the JUnit test report">
+        <mkdir dir="${test}-report"/>
+        <junitreport todir="${test}-report">
+            <fileset dir="${test}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test}-report"/>
+        </junitreport>
+        <echo level="info">Test report generated at ${test}-report</echo>
+    </target>
+
+    <target name="help" description="Display this Help message">
+        <echo message="MeshCMS ${version} Web Based Content Management System"/>
+        <echo message="===================================="/>
+        <echo/>
+        <echo message="Main targets:"/>
+        <echo message="all                   Build everything - all the distributions"/>
+        <echo message="dist-bin              Build the binary distribution"/>
+        <echo message="dist-src              Build the source distribution (basically the snapshot from the VCS"/>
+        <echo message="checkout              Check out the project files from the sf.net subversion repository"/>
+        <echo message="clean                 Clean all output directories"/>
+        <echo message="webapp                Build the webapplication, the WAR file"/>
+        <echo message="samples               Build the sample site"/>
+        <echo message="javadoc               Create Javadoc HTML files"/>
+        <echo message="tagdoc                Create Tag Library HTML files (with http://taglibrarydoc.dev.java.net/)"/>
+        <echo message="checkstyle            Run checkstyle report on all the soruces"/>
+        <echo message="test                  Run the JUnit tests"/>
+        <echo message="test-report           Generate the JUnit test report"/>
+        <echo message="help                  Display this Help message"/>
+        <echo/>
+        <echo/>
+        <echo message="Please ensure you have configured build.properties and build-essential/svnant.properties"/>
+    </target>
+</project>

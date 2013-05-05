@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>Virtual Sites</title>
+</head>
+<body>
+<p>
+MeshCMS can host a virtually unlimited number of sites in a single installation. If you look at the <a href="../meshcms/admin/editsites1.jsp">Site Manager</a>, you see that three sample sites are provided here. To see them you must tell MeshCMS or your PC to map the domains (www.)virtual.com, (www.)static.com and (www.)multilanguage.com to the IP of the machine that is running MeshCMS. You have two ways to do that (in this example let&#39;s assume that you are viewing this page at the URL <a href="http://localhost/virtualsites">http://localhost/virtualsites</a>. If not, please change suggested urls accordingly, for example adding port and context path). 
+</p>
+<p>
+The first method is to go to the Site Manager and type 127.0.0.1 (or the IP of the machine on which MeshCMS is running) in the Domain Aliases field of the site you want to try. Then browse <a href="http://127.0.0.1/">http://127.0.0.1</a> and you&#39;ll see that site. 
+</p>
+<p>
+The second method requires some mappings at OS level. For example, on Windows you should run this command: 
+</p>
+<pre>
+%SystemRoot%\system32\notepad.exe %SystemRoot%\system32\drivers\etc\hosts
+</pre>
+<p>
+and add these lines to that file: 
+</p>
+<pre>
+127.0.0.1 www.virtual.com
+127.0.0.1 www.static.com
+127.0.0.1 www.multilanguage.com
+</pre>
+<p>
+Then you can visit all virtual sites at <a href="http://www.virtual.com/">http://www.virtual.com</a> and so on. 
+</p>
+</body>
+</html>

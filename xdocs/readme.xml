@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<article>
+  <title>MeshCMS Readme</title>
+
+  <abstract>
+    <para>This file contains some basic information about MeshCMS. For a more
+    detailed description and guide, open the userguide/index.html file.</para>
+  </abstract>
+
+  <section>
+    <title>Installing MeshCMS</title>
+
+    <para>Deploy meshcms.war to your application server. This gives you a
+    fresh web application containing the basic elements, a home page and some
+    sample themes.</para>
+  </section>
+
+  <section>
+    <title>Using MeshCMS</title>
+
+    <para>Open your new web application (usually
+    http://localhost:8080/meshcms/). You can login using username "admin" and
+    password "admin".</para>
+  </section>
+
+  <section>
+    <title>Credits</title>
+
+    <para>MeshCMS uses free software from other companies/developers:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>SiteMesh<footnote id="note1">
+            <para>these components are included unmodified, so you can upgrade
+            them manually if you want to</para>
+          </footnote></para>
+
+        <para><ulink
+        url="http://www.opensymphony.com/sitemesh/">http://www.opensymphony.com/sitemesh/</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para>TinyMCE<footnoteref linkend="note1" /></para>
+
+        <para><ulink
+        url="http://tinymce.moxiecode.com/">http://tinymce.moxiecode.com/</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para>XTree<footnoteref linkend="note1" />, XMenu<footnoteref
+        linkend="note1" /></para>
+
+        <para><ulink
+        url="http://webfx.eae.net/">http://webfx.eae.net/</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para>Jakarta Commons FileUpload<footnoteref linkend="note1" /></para>
+
+        <para><ulink
+        url="http://jakarta.apache.org/commons/fileupload/">http://jakarta.apache.org/commons/fileupload/</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para>JavaMail<footnoteref linkend="note1" /></para>
+
+        <para><ulink
+        url="http://java.sun.com/products/javamail/">http://java.sun.com/products/javamail/</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para>jcrypt</para>
+
+        <para><ulink
+        url="http://locutus.kingwoodcable.com/jfd/crypt.html">http://locutus.kingwoodcable.com/jfd/crypt.html</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para>Nuvola KDE theme (control panel icons)</para>
+
+        <para><ulink
+        url="http://www.icon-king.com/">http://www.icon-king.com/</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para>Tigra Menu &amp; Tigra Tree Menu<footnote id="note2">
+            <para>this component is not included in the MeshCMS release, but
+            there is a custom tag that allows you to create a JavaScript menu
+            easily with this script. Connect to its homepage to download it
+            for use with MeshCMS</para>
+          </footnote></para>
+
+        <para><ulink
+        url="http://www.softcomplex.com/">http://www.softcomplex.com/</ulink></para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</article>

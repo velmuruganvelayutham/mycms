@@ -1,0 +1,8 @@
+<org.meshcms.core.MultiSiteManager>
+  <manageTripleWs>true</manageTripleWs>
+  <useDirsAsDomains>true</useDirsAsDomains>
+  <domains>
+    <property name="static.com" value=""/>
+    <property name="virtual.com" value=""/>
+  </domains>
+</org.meshcms.core.MultiSiteManager>

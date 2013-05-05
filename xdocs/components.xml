@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+<article>
+  <title>MeshCMS structure</title>
+
+  <subtitle>This article illustrates the various components of MeshCMS and how
+  they can be upgraded to a new version. Some advanced users might want to
+  customize MeshCMS further, but here we deal with the more usual scenario of
+  a normal installation and usage.</subtitle>
+
+  <section>
+    <title>/admin</title>
+
+    <para>This directory should be left unmodified by the user, but he can
+    choose to move it anywhere, for example if he needs to use the /admin dir
+    for other purposes. If we require this dir to stay there, we can simply
+    replace it with the new one when upgrading.</para>
+  </section>
+
+  <section>
+    <title>/module_templates</title>
+
+    <para>This dir is just a default for custom module templates and can be
+    left unmodified. The user can move it.</para>
+  </section>
+
+  <section>
+    <title>/themes</title>
+
+    <para>Contains some examples of themes. The user is free to delete them.
+    When upgrading, the installation might re-install the themes, but this is
+    not required: if the user wants to try the new themes (if any), he better
+    installs a test application separately. Further, the user can move this
+    dir, so it is better to leave it untouched.</para>
+  </section>
+
+  <section>
+    <title>/WEB-INF/web.xml</title>
+
+    <para>Hard task here! The new version might require some changes, but
+    simply replacing this file might be dangerous, as the user might have
+    customized it. Maybe it's better to let the user know that he needs to
+    edit something there.</para>
+  </section>
+
+  <section>
+    <title>/WEB-INF/sitemesh.xml</title>
+
+    <para>Some users might want to customize this file, but in most cases this
+    is not needed. Anyway we need to ask permission before replacing
+    it.</para>
+  </section>
+
+  <section>
+    <title>/WEB-INF/decorators.xml</title>
+
+    <para>This file contains the root element only. It is not needed by
+    MeshCMS, but SiteMesh requires it to be there. No problem if someone
+    customizes it: we don't need to replace it for the moment.</para>
+  </section>
+
+  <section>
+    <title>/WEB-INF/tlds</title>
+
+    <para>All files contained here belong to their libraries, except
+    meshcms-taglib.tld. If the user does not upgrade libraries by himself, we
+    can simply replace all four files with the new ones.</para>
+  </section>
+
+  <section>
+    <title>/WEB-INF/libs</title>
+
+    <para>Again, six JAR files that can be replaced with the new ones, without
+    touching other libs added by the user.</para>
+  </section>
+
+  <section>
+    <title>/WEB-INF/meshcms/filetypes.txt</title>
+
+    <para>A table of extensions. Some users might want to edit it, but
+    generally we can replace it with the new one.</para>
+  </section>
+
+  <section>
+    <title>/WEB-INF/classes</title>
+
+    <para>Some users might add some classes, but the subdirectory
+    com/cromoteca should be replaced with the new one without any issue.
+    org.clapper.util.text.* will not be included in the following
+    releases.</para>
+  </section>
+
+  <section>
+    <title>Items installed the first time only</title>
+
+    <para>Some elements need to be installed in case of a fresh install, but
+    they shouldn't be upgraded:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>/index.html (just an example)</para>
+      </listitem>
+
+      <listitem>
+        <para>/WEB-INF/meshcms/siteprops.txt</para>
+      </listitem>
+
+      <listitem>
+        <para>/WEB-INF/meshcms/users/admin.txt</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Conclusions</title>
+
+    <para>I think that if the user does not need to customize stuff like
+    sitemesh.xml or to upgrade a library, it is quite easy to upgrade MeshCMS.
+    Advanced users should have the option to "lock" some components so they
+    won't be upgraded. In this case, he should find somewhere an advice of
+    what changes are required to that component.</para>
+  </section>
+</article>

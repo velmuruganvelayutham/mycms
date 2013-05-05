@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<project name="svnant" basedir="." default="">
+
+  <!-- this file may be imported - so determine script's basedir -->
+  <dirname property="imported.basedir" file="${ant.file.svnant}"/>
+
+  <!-- svnant properties are in svnant.properties --> 
+  <property file="${imported.basedir}/svnant.properties" />
+
+  <!-- svnant configuration -->
+  <path id="svnant.classpath">
+    <pathelement location="${svnant.svnjavahl.jar}" /> 
+    <pathelement location="${svnant.svnant.jar}" />
+    <pathelement location="${svnant.svnClientAdapter.jar}" />
+    <pathelement location="${svnant.jakarta-regexp.jar}" /> 
+    <pathelement location="${svnant.commons-lang.jar}" /> 
+  </path>
+
+  <!-- svnant task definition -->
+  <taskdef resource="svntask.properties" classpathref="svnant.classpath"/>
+
+</project>
+

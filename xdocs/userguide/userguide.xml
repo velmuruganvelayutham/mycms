@@ -1,0 +1,3857 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+<book>
+  <title>MeshCMS 3.6 User Guide</title>
+
+  <bookinfo>
+    <title>MeshCMS 3.6 User Guide</title>
+
+    <author>
+      <firstname>Luciano</firstname>
+
+      <surname>Vernaschi</surname>
+    </author>
+
+    <abstract>
+      <para>MeshCMS is a simple content management system written in Java.
+      This guide illustrates the most common operations that MeshCMS users
+      will need to learn, from installation to daily usage.</para>
+    </abstract>
+  </bookinfo>
+
+  <chapter id="introduction">
+    <title>Introduction</title>
+
+    <para>MeshCMS is an online editing system written in Java. It provides a
+    set of features usually included in a CMS, but it uses a more traditional
+    approach: pages are stored in regular HTML files and all additional
+    features are file-based.</para>
+
+    <para>MeshCMS is available under the <ulink
+    url="http://www.gnu.org/copyleft/gpl.html">GPL license</ulink>. It allows
+    some different usage approaches:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>it can be used as a simple, basic CMS. The user interface allows
+        to edit pages visually, add and delete pages and do other basic tasks.
+        This kind of approach should be easy enough for everyone;</para>
+      </listitem>
+
+      <listitem>
+        <para>more experienced users can create complex themes and modules to
+        fulfill specific needs. MeshCMS offers many convenience classes and
+        methods, and it allows to create JSP pages that will be added to the
+        site map just like plain HTML pages;</para>
+      </listitem>
+
+      <listitem>
+        <para>since MeshCMS uses plain files and supports the standard
+        SiteMesh configuration, many external Java applications can be
+        integrated quite easily.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>Main features are:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para><emphasis role="bold">file-based</emphasis> - no database
+        needed;</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">easy to install</emphasis> - deploy
+        meshcms.war and you're done (tested on Tomcat and Jetty);</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">multi-site support</emphasis> - multiple
+        sites can be served with a single installation on a single
+        context;</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">compatible with other editors</emphasis> -
+        since it is file-based, you can edit your files with other programs if
+        you want, then upload them as usual;</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">search engine friendly</emphasis> - due to
+        its file-based nature, sites made with MeshCMS get pretty URLs by
+        default, have a clear site map and are easily indexed by search
+        engines;</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">wysiwyg editor included</emphasis> - uses
+        <ulink url="http://tinymce.moxiecode.com/">TinyMCE</ulink>;</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">file manager</emphasis> with image
+        thumbnails, file operations, clipboard, upload, download, unzip and
+        other functions - can also be used from within the wysiwyg editor to
+        select links and images;</para>
+      </listitem>
+
+      <listitem>
+        <para>support for <emphasis role="bold">themes</emphasis> - uses
+        <ulink url="http://www.opensymphony.com/sitemesh/">SiteMesh</ulink> as
+        engine;</para>
+      </listitem>
+
+      <listitem>
+        <para>support for <emphasis role="bold">modules</emphasis> to create
+        commonly used components automatically - some module templates are
+        provided (image gallery, mail form, download list, site map and
+        others);</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">tag library</emphasis> to create new
+        themes easily - menus and other common components are created
+        automatically.</para>
+      </listitem>
+    </itemizedlist>
+  </chapter>
+
+  <chapter id="install">
+    <title>Installation</title>
+
+    <section id="install_basic">
+      <title>Basic Procedures</title>
+
+      <para>If you want to try MeshCMS, the simplest way to get started is to
+      copy <filename>meshcms.war</filename> or
+      <filename>samples.war</filename> into the webapps directory of your
+      application server (e.g. <ulink
+      url="http://jakarta.apache.org/tomcat/">Tomcat</ulink> or <ulink
+      url="http://jetty.mortbay.org/">Jetty</ulink>) and open
+      <emphasis>http://localhost:8080/meshcms/</emphasis> or
+      <emphasis>http://localhost:8080/samples/</emphasis>.</para>
+
+      <para>If you want to deploy a website, you will have to configure a
+      virtual host for it as usual. There is nothing special in the setup of
+      MeshCMS, so please refer to the documentation of your application server
+      to choose the configuration options that best suit your needs.</para>
+
+      <para>MeshCMS is able to create thumbnails of images, so you need to
+      provide an environment that allows image processing. On some systems you
+      might need to add the <option>-Djava.awt.headless=true</option> option
+      to the Java VM that runs the Servlet container.</para>
+
+      <para>Starting from version 3.0, MeshCMS allows to serve multiple sites
+      from within a single context. If you want to do this, you should
+      configure the context to accept all domains that you want to host.
+      Here's a simple example of <filename>server.xml</filename> file for
+      Tomcat 5.5 that accepts all domain names:</para>
+
+      <programlisting>&lt;Server port="8005" shutdown="SHUTDOWN"&gt;
+  &lt;Service name="Catalina"&gt;
+    &lt;Connector port="8080" /&gt;
+
+    &lt;Engine name="Catalina" defaultHost="localhost"&gt;
+      &lt;Host name="localhost" appBase="/usr/local/tomcat/webapps"&gt;
+        &lt;Context path="" docBase="ROOT" /&gt;
+      &lt;/Host&gt;
+    &lt;/Engine&gt;
+  &lt;/Service&gt;
+&lt;/Server&gt;</programlisting>
+
+      <note>
+        <para><option>ROOT</option> is the recommended name for the root
+        context in a Tomcat host.</para>
+      </note>
+    </section>
+
+    <section id="charsets">
+      <title>Choosing a Charset</title>
+
+      <para>MeshCMS is file-based, so it needs to pick up a charset to read
+      and write files. Files are written by MeshCMS itself, but they are read
+      by the servlet container (e.g. Tomcat) and processed by SiteMesh. For
+      this reason, MeshCMS will use the system charset to ensure
+      compatibility. If the charset encoding of the platform is not good for
+      you, you can override it using the
+      <code>-Dfile.encoding=<replaceable>charsetname</replaceable></code>
+      option in the command that launches the Java VM to run the servlet
+      container.</para>
+
+      <para>MeshCMS is developed on UTF-8 and ISO-8859-1 machines, but many
+      users have different charsets and use them successfully.</para>
+
+      <para>A complete charset like UTF-8 is always preferable, even if you
+      plan to use English characters only: the default charset is used
+      extensively across all the CMS, even for mail messages sent through mail
+      forms. If someone sends you a message in another language, it would be
+      unreadable since the browser will translate all unknown characters to
+      HTML entities.</para>
+    </section>
+
+    <section id="upgrade">
+      <title>Upgrade</title>
+
+      <para>Starting from version 3.0, MeshCMS is composed of two directories:
+      <filename>/meshcms/admin</filename> and <filename>/WEB-INF</filename>.
+      To perform an upgrade, you should delete the current versions of those
+      directories and use the new ones. Be careful not to delete the whole
+      <filename>/meshcms</filename> directory, but just the
+      <filename>admin</filename> subdirectory.</para>
+
+      <para>This upgrade strategy works fine in case of a simple usage of
+      MeshCMS. In other cases the upgrade process can be harder. You probably
+      won't modify the contents of the <filename>/meshcms/admin</filename>
+      directory, but the <filename>/WEB-INF</filename> one is more likely to
+      be changed. If you want to add an external application, or if you want
+      to configure SiteMesh differently, you must keep track of your changes
+      so that you can integrate them with the new release.</para>
+    </section>
+  </chapter>
+
+  <chapter id="basic_concepts">
+    <title>Basic Concepts</title>
+
+    <section id="site_map">
+      <title>The Site Map</title>
+
+      <para>The site map is one of the most important MeshCMS components.
+      Since MeshCMS is file based, there is no site map defined in a database,
+      so MeshCMS must figure it out by parsing the file system. The site map
+      is not a simple list of pages: it is a hierarchical structure which
+      follows some strict rules.</para>
+
+      <para>The key of the site map is the concept of <firstterm>welcome
+      file</firstterm>. This concept is well known by webmasters. When you
+      access <uri>http://www.site.com/somedirectory/somepage.html</uri>, the
+      file <filename>somepage.html</filename> located in the
+      <filename>/somedir</filename> directory is sent to your browser. But
+      when you access <uri>http://www.site.com/somedirectory/</uri>, you are
+      requesting a directory, not a file. In such case, a file with a specific
+      name is searched into that directory and, if it is available, that file
+      is sent to your browser. Usually this file is called
+      <filename>index.html</filename>, but more than one can be specified, and
+      the first match will be used. The default for MeshCMS is to search for
+      <filename>index.html</filename>, then <filename>index.htm</filename> and
+      finally <filename>index.jsp</filename> (you can change this by editing
+      the <filename>web.xml</filename> configuration file according to the
+      Servlet specification). The result of this convention is that accessing
+      <uri>http://www.site.com/somedirectory/</uri> and accessing
+      <uri>http://www.site.com/somedirectory/index.html</uri> will lead to the
+      same page.</para>
+
+      <para>MeshCMS uses the welcome files heavily. When it encounters a
+      directory while parsing the website tree, it checks whether that
+      directory contains a welcome file or not. If there is no welcome file,
+      <emphasis role="bold">that directory is ignored</emphasis>, along with
+      all subdirectories. This means that all pages included in that directory
+      will <emphasis>not</emphasis> be included in the site map, and that
+      users will not find those pages in the navigation menu.</para>
+
+      <note>
+        <para>Pages included in ignored directories are still available by
+        using a direct link or by typing the full address in the browser
+        location bar.</para>
+      </note>
+
+      <para>Why is the site map made this way? There are two main reasons. The
+      first one is that if a directory without welcome file were included in
+      the navigation menu, clicking on it would show a listing of the
+      directory contents, or an error page if that listing is not allowed. So
+      this is a way to force the use of a welcome page. The second reason is
+      that there are many cases where a page must not be available in the
+      navigation menu. Suppose that you want to use the <link
+      linkend="modules">include module template</link> to add some news in
+      your web pages. You will create a directory that will contain an HTML
+      file for each news, and then you will use that directory as module
+      argument. If none of the HTML files has the name of a welcome file,
+      those news will not be inserted in the navigation menu directly, but
+      they will still available for the module as expected. This is just an
+      example of a situation in which a welcome file should not be
+      used.</para>
+
+      <para>When a directory contains a welcome file, it is inserted in the
+      site map, and all other items available in that directory are included
+      as children pages. Items can be files (HTML or server-side pages) or
+      directories (which must have their own welcome file as explained
+      above).</para>
+
+      <para>This method has an important drawback: <emphasis role="bold">a
+      page that is not a welcome file cannot have children pages</emphasis>.
+      For example, there is no way to add a child page to
+      <uri>http://www.site.com/somedirectory/somepage.html</uri>. This is
+      usually not a problem, since you can always create a page at the same
+      level (for example
+      <uri>http://www.site.com/somedirectory/otherpage.html</uri>), but if you
+      think you will want to add children pages to a page, use a new directory
+      for it. Keep in mind that
+      <uri>http://www.site.com/somedirectory/somepage.html</uri> and
+      <uri>http://www.site.com/somedirectory/somepage/index.html</uri> are
+      indexed <emphasis role="bold">exactly in the same way</emphasis>. If you
+      create new pages using the <link linkend="page_manager">Page
+      Manager</link> tool, leave the "Create enclosing directory" box checked,
+      so you will be able to add children pages to your new page in
+      future.</para>
+    </section>
+
+    <section id="external_tools">
+      <title>External Documents and Tools</title>
+
+      <para>One of the reasons that led to the creation of MeshCMS was the
+      need to manage hundreds of HTML documents created previously, and to be
+      able to add some Microsoft Word documents if needed. As a consequence,
+      MehsCMS accepts any HTML file that it finds while exploring the website
+      directory to create the site map. Thanks to the power of SiteMesh, pages
+      created in different ways are parsed and decorated, while the title can
+      be extracted to be used in the site menu.</para>
+
+      <para>Some MeshCMS users constantly upload Word documents converted to
+      HTML, while others edit pages directly on the web using external tools
+      like Macromedia Contribute, which they can find more comfortable than
+      using the online editor provided by MeshCMS.</para>
+
+      <para>This approach has led to some choices that are different from the
+      ones made for other CMSes. For example, there's no need to specify in
+      which order pages must be inserted in the navigation menu. While one can
+      prefer to take full control of that order, this is really tedious when
+      dealing with hundreds of documents. MeshCMS automatically puts the
+      welcome file at the beginning on the list and then orders the other
+      pages according to the number of visits in the last days. This brings
+      the most requested documents at the beginning of the list.</para>
+
+      <para>The <link linkend="page_manager">Page Manager</link> tool offers
+      an option to assign a <firstterm>score</firstterm> to each page anyway.
+      Pages with higher score will always come first, regardless of the count
+      of visits. It is a tedious process to use scores to order the whole site
+      map, and it is not a user-friendly method at all. But partial orderings
+      are allowed: default score is zero for all pages, so one can assign a
+      score just to those pages that he wants to see at the beginning
+      (positive score) or at the end (negative score) of the list. Pages with
+      the same score are ordered according to the number of visits.</para>
+
+      <para>Most users assign a score to first-level pages (for example: home
+      page, company profile, products and finally contacts), while subpages
+      are left without score.</para>
+
+      <para>Another consequence of the need to support documents that come
+      from many sources is that MeshCMS does not check them for standard
+      compliance. It respects the generalistic approach that is allowed by
+      SiteMesh. Of course, a web developer is still allowed to put document
+      type definitions in his own themes and to require his users to deal with
+      well-formed documents only.</para>
+    </section>
+
+    <section id="multiple_sites">
+      <title>Serving multiple sites from a single installation</title>
+
+      <para>Tomcat and other servlet containers allow to create multiple
+      hosts, and to put multiple contexts within them. Web developers usually
+      need to host more than a single website on the same server, so they end
+      up creating a host for each website and specifying which domains must be
+      served by that host. This is a good setup strategy since it allows to
+      separate sites and to tune their configuration. Nevertheless, this
+      method leads to many installations of MeshCMS that must be maintained
+      separately, which is quite annoying, for example when upgrading.</para>
+
+      <para>MeshCMS 3 gives the choice between this approach and a different
+      one: you can install it once and serve all sites from that single
+      context. You will probably configure the host to serve all domains and
+      let MeshCMS map them to different sites. The advantages of this approach
+      are:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>you have to deal with a single installation of the
+          software;</para>
+        </listitem>
+
+        <listitem>
+          <para>you will save some server resources;</para>
+        </listitem>
+
+        <listitem>
+          <para>you can see the files of all sites from the file manager if
+          you have the needed permissions;</para>
+        </listitem>
+
+        <listitem>
+          <para>you can configure the sites and their mappings using the web
+          interface.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The drawbacks are:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>it is more difficult to manage security separately for each
+          site;</para>
+        </listitem>
+
+        <listitem>
+          <para>if you use JSP pages in virtual sites, you must keep into
+          account the fact that MeshCMS will map URLs to files
+          differently.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>To serve multiple sites, you need to install MeshCMS as usual.
+      Then you can use the <link linkend="control_panel">Control Panel</link>
+      to create new sites. If the DNS has been configured properly, you can
+      access new sites immediately. Please do so, log into it with your admin
+      user of the main website and check the <link linkend="configure">site
+      configuration</link> to make sure that all options are fine. You may
+      also want to create some users, a welcome page and so on.</para>
+
+      <section id="main_and_virtual_sites">
+        <title>Main site and virtual sites</title>
+
+        <para>When you install MeshCMS, you have a single site. This is the
+        good old default scenario. You can add a virtually unlimited number of
+        virtual sites on top of it. While virtual sites behave like the main
+        one apparently, there are some differences between. The main
+        difference is the fact that a different file is served when a page of
+        a virtual site is requested. Normally, if you configure a Tomcat host
+        to serve <uri>www.site1.com</uri> and <uri>www.site2.com</uri>, the
+        same file will be served for
+        <uri>http://www.site1.com/index.html</uri> and
+        <uri>http://www.site2.com/index.html</uri>. That file is simply
+        <filename>/index.html</filename>, located in the root context. But if
+        you setup <uri>www.site2.com</uri> as a virtual site on top of
+        <uri>www.site1.com</uri>, a request for
+        <uri>http://www.site2.com/index.html</uri> will lead to
+        <filename>/meshcms/sites/site2.com/index.html</filename>.</para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter id="common_tasks">
+    <title>Common Tasks</title>
+
+    <section id="create_theme">
+      <title>Create a Theme</title>
+
+      <para>One of the essential features of a CMS is the ability to apply a
+      common look &amp; feel to many pages, adding the graphics and some other
+      components like the navigation menu. In MeshCMS you can achieve this
+      result by using a <firstterm>theme</firstterm>. There is a special
+      directory in MeshCMS whose default path is
+      <filename>/meshcms/themes</filename>. A theme is a subdirectory of
+      <filename>/meshcms/themes</filename> that contains all the elements
+      needed by the theme itself. Those elements are:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>the theme main file: a JSP page named
+          <filename>main.jsp</filename> that defines the common part of the
+          pages and where the variable parts must be inserted;</para>
+        </listitem>
+
+        <listitem>
+          <para>the theme CSS: a CSS file named <filename>main.css</filename>
+          that has the only special feature of being automatically linked from
+          the page if the <link linkend="tag_defaultcss">defaultcss</link>
+          custom tag is used. This should always be done, since using that
+          syntax, the CSS will also be sent to the wysiwyg editor to display
+          the page body being edited;</para>
+        </listitem>
+
+        <listitem>
+          <para>an additional CSS for MeshCMS specific styles (page editor and
+          modules), named <filename>meshcms.css</filename>. If this CSS is not
+          found in the theme, the default one will be used. You can override
+          it if you want to change the appearance of MeshCMS components (the
+          default is located in the <filename>/meshcms/admin/theme</filename>
+          directory);</para>
+        </listitem>
+
+        <listitem>
+          <para>any other file needed by the theme: other CSS files, images,
+          javascripts and so on. You can then use these files in your main
+          file by inserting the <link linkend="tag_themepath">themepath</link>
+          tag that will be replaced with the right path to the theme
+          directory.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>You can assign a theme to a page using the <link
+      linkend="page_manager">Page Manager</link> tool in the Control Panel.
+      There's no need to assign a theme to each page: if a page has no theme,
+      the theme of the parent will be used. For example, if
+      <uri>www.yoursite.com/apage.html</uri> has no theme, it will look like
+      <uri>www.yoursite.com</uri>. In many cases a theme is assigned to the
+      home page and that's all.</para>
+
+      <section id="theme_main_file">
+        <title>The Theme Main File</title>
+
+        <para>The main file of a theme is a JSP file that will include
+        component of the page being shown:</para>
+
+        <programlisting>&lt;%@ taglib uri="meshcms-taglib" prefix="mesh" %&gt;
+
+&lt;html&gt;
+ &lt;head&gt;
+  &lt;title&gt;&lt;mesh:pagetitle /&gt;&lt;/title&gt;
+  &lt;mesh:defaultcss /&gt;
+  &lt;mesh:pagehead /&gt;
+ &lt;/head&gt;
+
+ &lt;body&gt;
+  &lt;mesh:editor&gt;
+   &lt;mesh:pagebody /&gt;
+  &lt;/mesh:editor&gt;
+ &lt;/body&gt;
+&lt;/html&gt;</programlisting>
+
+        <para>This theme file is very basic, but it works: when applied to the
+        sample MeshCMS home page, it looks this way:</para>
+
+        <screenshot>
+          <screeninfo>The simplest theme ever with a minimal CSS file (just to
+          show that it works too)</screeninfo>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="bare_viewing.png" />
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+
+        <para>The same basic theme can be used to edit the page:</para>
+
+        <screenshot>
+          <screeninfo>The simplest theme used to edit the same
+          page</screeninfo>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="bare_editing.png" />
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+
+        <para>Now you know that a basic theme isn't complicated at all. In
+        fact, it is a normal HTML page (which you can create with your
+        favorite editor), that includes some <link
+        linkend="tag_library">custom tags</link> that will be replaced by
+        MeshCMS with the contents of the page. This is how MeshCMS translates
+        the page above:</para>
+
+        <programlisting>&lt;html&gt;
+ &lt;head&gt;
+  &lt;title&gt;Home Page&lt;/title&gt;
+  &lt;link type="text/css" rel="stylesheet" href="/meshcms/themes/bare/main.css" /&gt;
+  &lt;link type="text/css" rel="stylesheet" href="/meshcms/admin/theme/meshcms.css" /&gt;
+  &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+ &lt;/head&gt;
+
+ &lt;body&gt;
+  &lt;p&gt;Welcome to MeshCMS 2.0. Here is a list ...&lt;/p&gt;
+  ...
+ &lt;/body&gt;
+&lt;/html&gt;</programlisting>
+
+        <para>When you create a theme, you should create a normal HTML page
+        along with its own CSS file and images and store all files in a
+        directory. Use some text placeholder to point out where to put page
+        components. For example, write [TITLE] where you expect to see the
+        title of the page, [SITE MENU] where you want to see the menu, [BODY]
+        where the text of the page should be located and so on. Please note
+        that the notation with square brackets has nothing special. They are
+        just placeholders. You might also use the "lorem ipsum" text instead
+        of [BODY]. Your file might look like this one:</para>
+
+        <screenshot>
+          <screeninfo>A skeleton for a theme file</screeninfo>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="theme_step1.jpg" />
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+
+        <para>This is the corresponding HTML code:</para>
+
+        <programlisting>&lt;html&gt;
+
+&lt;head&gt;
+  &lt;title&gt;[TITLE]&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style="margin: 0px;"&gt;
+&lt;table width="770" border="0" cellspacing="0" cellpadding="0"&gt;
+  &lt;tr&gt;
+    &lt;td colspan="2" valign="bottom" style="background: url(flowers.jpg) no-repeat; ¶
+     height: 120px; padding: 10px; font-size: 22px;"&gt;[TITLE]&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td bgcolor="#E2E0C9"&gt;
+    &lt;table border="0" align="center" cellpadding="3" cellspacing="0"&gt;
+      &lt;tr&gt;&lt;th&gt;Site Menu:&lt;/th&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;[SITE MENU]&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;th&gt;MeshCMS Menu:&lt;/th&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;[MESHCMS MENU]&lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+    &lt;/td&gt;
+    &lt;td&gt;&lt;table border="0" cellspacing="0" cellpadding="5"&gt;
+      &lt;tr&gt;&lt;td&gt;[BREADCRUMBS]&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;[BODY]&lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr align="center"&gt;
+    &lt;td colspan="2" bgcolor="#DDBC00"&gt;
+      Powered by &lt;a href="http://www.cromoteca.com/meshcms/"&gt;MeshCMS&lt;/a&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</programlisting>
+
+        <para>When you are happy with your page, open it with a source code
+        editor. Replace:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>[TITLE] with <code>&lt;mesh:pagetitle /&gt;</code></para>
+          </listitem>
+
+          <listitem>
+            <para>[SITE MENU] with <code>&lt;mesh:simplemenu
+            /&gt;</code></para>
+          </listitem>
+
+          <listitem>
+            <para>[MESHCMS MENU] with <code>&lt;mesh:adminmenu
+            /&gt;</code></para>
+          </listitem>
+
+          <listitem>
+            <para>[BREADCRUMBS] with <code>&lt;mesh:breadcrumbs
+            /&gt;</code></para>
+          </listitem>
+
+          <listitem>
+            <para>[BODY] with <code>&lt;mesh:pagebody /&gt;</code></para>
+          </listitem>
+        </itemizedlist>
+
+        <para>There is a link to an image in the file: you must add
+        <code>&lt;mesh:themepath /&gt;</code> before the image path so it will
+        be found correctly. <code>url(flowers.jpg)</code> becomes
+        <code>url(&lt;mesh:themepath /&gt;/flowers.jpg)</code>.</para>
+
+        <para>Then add this line at the beginning of your file:</para>
+
+        <programlisting>&lt;%@ taglib uri="meshcms-taglib" prefix="mesh" %&gt;</programlisting>
+
+        <para>Save your file and name it <filename>main.jsp</filename>. The
+        CSS must be named <filename>main.css</filename> and must be located in
+        the same directory. This directory must be located in the
+        <filename>/meshcms/themes</filename> directory in your site, and the
+        name of the directory will be used as name of the theme itself. All
+        images and other files must be located in the same directory. You can
+        use subdirectories, but then you need to write paths accordingly: for
+        example, if you put all images in a subdirectory called
+        <filename>images</filename>, you will use <code>url(&lt;mesh:themepath
+        /&gt;/images/flowers.jpg)</code> in the example above.</para>
+
+        <para>When your brand new decorator is available, reopen the home page
+        of your web site and your new look &amp; feel should now be used to
+        display the page:</para>
+
+        <screenshot>
+          <screeninfo>The new theme in use</screeninfo>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="theme_step2.jpg" />
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+
+        <programlisting><emphasis role="bold">&lt;%@ taglib uri="meshcms-taglib" prefix="mesh" %&gt;</emphasis>
+
+&lt;html&gt;
+
+&lt;head&gt;
+  &lt;title&gt;<emphasis role="bold">&lt;mesh:pagetitle /&gt;</emphasis>&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style="margin: 0px;"&gt;
+&lt;table width="770" border="0" cellspacing="0" cellpadding="0"&gt;
+  &lt;tr&gt;
+    &lt;td colspan="2" valign="bottom" style="background: ¶
+     url(<emphasis role="bold">&lt;mesh:themepath /&gt;</emphasis>/flowers.jpg) no-repeat; height: 120px; ¶
+     padding: 10px; font-size: 22px;"&gt;<emphasis role="bold">&lt;mesh:pagetitle /&gt;</emphasis>&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td bgcolor="#E2E0C9"&gt;
+    &lt;table border="0" align="center"cellpadding="3" cellspacing="0"&gt;
+      &lt;tr&gt;&lt;th&gt;Site Menu:&lt;/th&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;<emphasis role="bold">&lt;mesh:simplemenu /&gt;</emphasis>&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;th&gt;MeshCMS Menu:&lt;/th&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;<emphasis role="bold">&lt;mesh:adminmenu separator="&lt;br /&gt;" /&gt;</emphasis>&lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+    &lt;/td&gt;
+    &lt;td&gt;&lt;table border="0" cellspacing="0" cellpadding="5"&gt;
+      &lt;tr&gt;&lt;td&gt;<emphasis role="bold">&lt;mesh:breadcrumbs /&gt;</emphasis>&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;<emphasis role="bold">&lt;mesh:pagebody /&gt;</emphasis>&lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr align="center"&gt;
+    &lt;td colspan="2" bgcolor="#DDBC00"&gt;
+      Powered by &lt;a href="http://www.cromoteca.com/meshcms/"&gt;MeshCMS&lt;/a&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</programlisting>
+
+        <para>There are other tags that you must add in your decorator:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><code>&lt;mesh:pagehead /&gt;</code> and
+            <code>&lt;mesh:defaultcss /&gt;</code> go inside the
+            <code>&lt;head&gt;</code> tag of your file to include headers and
+            CSS;</para>
+          </listitem>
+
+          <listitem>
+            <para><code>&lt;mesh:editor&gt;...&lt;/mesh:editor&gt;</code> must
+            enclose all the contents of the <code>&lt;body&gt;</code>
+            tag;</para>
+          </listitem>
+
+          <listitem>
+            <para><code>&lt;mesh:setlocale /&gt;</code> to define the locale
+            of the pages that will use the theme (optional);</para>
+          </listitem>
+
+          <listitem>
+            <para>you will probably want to add one or more <link
+            linkend="modules">modules</link>; otherwise you can't take
+            advantage of available modules in your pages;</para>
+          </listitem>
+
+          <listitem>
+            <para>other <link linkend="tag_library">tags</link> could be
+            useful in some cases.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>After these other modifications, you should get this source
+        code:</para>
+
+        <programlisting>&lt;%@ taglib uri="meshcms-taglib" prefix="mesh" %&gt;
+<emphasis role="bold">&lt;mesh:setlocale value="en" /&gt;</emphasis>
+
+&lt;html&gt;
+
+&lt;head&gt;
+  &lt;title&gt;
+    &lt;mesh:pagetitle /&gt;
+    <emphasis role="bold">&lt;mesh:pagehead /&gt;</emphasis>
+    <emphasis role="bold">&lt;mesh:defaultcss /&gt;</emphasis>
+  &lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style="margin: 0px;"&gt;<emphasis role="bold">&lt;mesh:editor&gt;</emphasis>
+&lt;table width="770" border="0" cellspacing="0" cellpadding="0"&gt;
+  &lt;tr&gt;
+    &lt;td colspan="2" valign="bottom" style="background: ¶
+     url(&lt;mesh:themepath /&gt;/flowers.jpg) no-repeat; height: 120px; ¶
+     padding: 10px; font-size: 22px;"&gt;&lt;mesh:pagetitle /&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td bgcolor="#E2E0C9"&gt;
+    &lt;table border="0" align="center" cellpadding="3" cellspacing="0"&gt;
+      &lt;tr&gt;&lt;th&gt;Site Menu:&lt;/th&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;mesh:simplemenu /&gt;&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;th&gt;MeshCMS Menu:&lt;/th&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;mesh:adminmenu separator="&lt;br /&gt;" /&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+    &lt;/td&gt;
+    &lt;td&gt;&lt;table border="0" cellspacing="0" cellpadding="5"&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;mesh:breadcrumbs /&gt;&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;mesh:pagebody /&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr align="center"&gt;
+    &lt;td colspan="2" bgcolor="#DDBC00"&gt;
+      Powered by &lt;a href="http://www.cromoteca.com/meshcms/"&gt;MeshCMS&lt;/a&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+<emphasis role="bold">&lt;/mesh:editor&gt;</emphasis>&lt;/body&gt;
+
+&lt;/html&gt;</programlisting>
+      </section>
+    </section>
+
+    <section id="edit_page">
+      <title>Edit a Page</title>
+
+      <para>Once you have logged in, you should see some links to edit a page
+      while viewing it. Select "Edit this page" and the wysiwyg editor (<ulink
+      url="http://tinymce.moxiecode.com/">TinyMCE</ulink>) will show up, along
+      with other fields to edit the page title and the various modules.</para>
+
+      <para>Editing a page shouldn't be that hard. TinyMCE provides a standard
+      interface to write text and format it as desired. It comes with its own
+      help.</para>
+
+      <para>MeshCMS adds the ability to browse for links and images. Just
+      click on the <inlinegraphic fileref="browse_button.gif" /> Browse icon
+      in the image and link popups to access the file manager with all its
+      functions (upload included). The link popup also contains a drop down
+      list with all pages available in the site map to insert links in a
+      moment.</para>
+
+      <note>
+        <para>in some cases, when saving a page you might want to unckeck the
+        "use relative URLs when saving" option, so local links will be saved
+        with the full path. This is useful when saving pages to be included
+        with the include <link linkend="modules">module</link>: this option
+        will allow links included in that pages to work regardless of the page
+        in which they will be included.</para>
+      </note>
+
+      <note>
+        <para>TinyMCE comes pre-configured in MeshCMS, but you can change that
+        configuration, for example to use other features and plugins.</para>
+      </note>
+
+      <para>Other than editing the main page text, MeshCMS supports modules to
+      automate some common page components. See <xref
+      linkend="standard_modules" /> for details.</para>
+    </section>
+
+    <section id="create_new_page">
+      <title>Create a New Page</title>
+
+      <para>In MeshCMS a page is a file. Period. Having said that, there are
+      three ways to add a new page:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>open the <link linkend="file_manager">File Manager</link> and
+          create a new HTML file in the desired place. Please keep in mind how
+          the <link linkend="site_map">site map</link> is created;</para>
+        </listitem>
+
+        <listitem>
+          <para>(much easier) go to the <link linkend="control_panel">Control
+          Panel</link>, then choose <link linkend="page_manager">Page
+          Manager</link>. Choose the <inlinegraphic
+          fileref="newpage_button.gif" /> icon associated to the right page:
+          you will add a child page to that one. A small popup will open.
+          Insert a title for the page (use a short one since it wiil be used
+          to create a name for the file: you will be able to change it while
+          editing the page). Uncheck <option>Create enclosing
+          directory</option> only if you are absolutely sure that you won't
+          add a child page to the new one in future. Then click on
+          <command>Create</command> and the editor will be opened;</para>
+        </listitem>
+
+        <listitem>
+          <para>(the easiest way) navigate to a page and click on <option>New
+          page</option> or on <option>New child page</option>. You will add a
+          new page at the same level of the current one or a child page
+          respectively. Then continue as above (insert the title and so
+          on).</para>
+        </listitem>
+      </orderedlist>
+
+      <para>Additionally, you can add (and edit) pages from outside MeshCMS,
+      for example using an FTP client. After doing that, make sure you run
+      <command>Refresh Site Map</command> in the Control Panel so MeshCMS can
+      find your new page(s). The site map is automatically refreshed after
+      some hours, so new pages will be found even if you don't start the
+      update manually.</para>
+    </section>
+  </chapter>
+
+  <chapter id="control_panel">
+    <title>Control Panel</title>
+
+    <para>This is the home page of the MeshCMS admin area. It contains icons
+    for the all availabe tools. Icons are shown or hidden according to user's
+    privileges.</para>
+
+    <para>Some of them are very simple: there is a link to the home page, a
+    button to log in or out and a button to refresh the site map. This one is
+    useful when something has been changed from outside MeshCMS (e.g. via FTP
+    or some shell), when you want to empty the cache for some reason, or when
+    you want menus to be re-ordered according to current page hits.</para>
+
+    <para>Other functions are more complex and are described in separate
+    sections.</para>
+
+    <section id="page_manager">
+      <title>Page Manager</title>
+
+      <para>Here the site map is shown in a convenient way and some actions
+      are available for each page. The table has these columns:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Page title</emphasis>: shows the title
+          of the page, preceded by an icon that allows to show/hide children
+          pages (if any).</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Hits</emphasis>: a count of the page
+          hits in the last days. This is not serious statistics, but since
+          this count is stored to be used when sorting pages, it is shown here
+          to have a rough idea of how much a page is being visited.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Cache</emphasis>: indicates if the page
+          is currently available in the page cache.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Menu Caption</emphasis>: the name of the
+          page in the navigation menus, breadcrumbs and links. If the field is
+          empty, the page title will be used instead.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Theme</emphasis>: the theme used for the
+          page. If the field is empty, the theme of the parent will be used.
+          If <option>no theme</option> is selected, the page will be shown "as
+          is".</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Score</emphasis>: a number that
+          indicates the <quote>importance</quote> of the page. This value is
+          used to sort pages in menus. Pages with the same score are sorted
+          according to their hits. If the score is not specified, its value is
+          zero, so you can use a negative value to put pages at the end of the
+          list.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Actions</emphasis>: icons to perform
+          some actions related to that page:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><emphasis>View this page</emphasis>;</para>
+            </listitem>
+
+            <listitem>
+              <para><emphasis>Edit this page</emphasis>: uses the best editor
+              (visual or source) according to the file type;</para>
+            </listitem>
+
+            <listitem>
+              <para><emphasis>Create a new child page</emphasis>: available if
+              that page can have children (see <xref linkend="site_map" /> for
+              details);</para>
+            </listitem>
+
+            <listitem>
+              <para><emphasis>Delete this page</emphasis>: available if the
+              page has not children pages;</para>
+            </listitem>
+
+            <listitem>
+              <para><emphasis>Toggle submenu visibility</emphasis>: if grayed
+              out, some menus will take this option into account and will not
+              display children of that page (useful when a page has too many
+              children for example).</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section id="configure">
+      <title>Configure</title>
+
+      <para>The configure page is available to administrators only. Editable
+      options are divided in groups.</para>
+
+      <para>The first section allows to define some values for the site, which
+      can be useful or not according to the theme used. The theme can display
+      them using the <link linkend="tag_info">info</link> tag.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Name</emphasis>: name of the
+          site;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Host (domain)</emphasis>: the main host
+          for the site (e.g. www.site.com, not the full URL);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Description</emphasis>: a description of
+          the site (usually inserted into the related meta tag);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Keywords</emphasis>: some keywords for
+          the site (usually inserted into the related meta tag);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Author</emphasis>: name of the site
+          author (e.g. for a copyright notice);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Author full URL</emphasis>: full address
+          of the author's website.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The second section defines some interface parameters.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Visually editable types</emphasis>: a
+          comma-separated list of file types that can be edited using the
+          wysiwyg editor;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Use system theme</emphasis>: if this
+          option is selected, the default system theme will be used for the
+          control panel and for all other administrative pages. While it is
+          preferable to use the same theme as the rest of the site, it is
+          recommended to turn this option on while editing themes, so admin
+          pages are always available without errors;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Prevent hotlinking</emphasis>: if
+          selected, others are not allowed to link to your images and files
+          directly: they must link to pages on your site. A simple window will
+          be shown to state that the file comes from your site. That page
+          won't mention that you're using MeshCMS;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Use high quality thumbnails by
+          default</emphasis>: if selected, the file manager and the gallery
+          module will create thumbnails with a better quality;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Resize images on the server when
+          needed</emphasis>: if selected, when an image with a defined size is
+          found in the page HTML code, MeshCMS will replace it with a resized
+          image, so you can safely include a big image in a page and resize it
+          from within TinyMCE. Note that it is recommended to enable high
+          quality thumbnails (see above) when this option is on;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Modules are collapsed initially in the
+          editor</emphasis>: if this option is checked, you will need to click
+          on a module caption in the editor to modify the module. This has
+          been done to make the editor interface less cluttered when a theme
+          has many modules.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The third section configures the SMTP server used to send mail
+      messages.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Server name</emphasis>: the name of the
+          server used to send e-mail messages when a visitor compiles a mail
+          form;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Username</emphasis>: needed if the
+          server requires authentication;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Password</emphasis>: needed if the
+          server requires authentication.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The fourth section defines more system parameters.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Page cache</emphasis>: used to activate
+          the page caching. This is highly recommended since the "decoration"
+          of a page is a quite expensive task. If you have much memory (or few
+          pages), you can store cached pages in memory, otherwise save them on
+          disk. By default, a mixed strategy is used: memory storage with
+          fallback to disk. Pages are saved in GZIP format and are sent
+          compressed when the browser supports that (always true with modern
+          browsers);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Clean HTML code when saving</emphasis>:
+          used to improve quality of generated HTML: if this option is
+          enabled, pages edited visually are post-processed on the server to
+          generate valid XHTML;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Site map update interval
+          (hours)</emphasis>: the validity of the site map. After the
+          specified amount of hours, the site map is recreated and the page
+          cache is emptied;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Backup life (days)</emphasis>: the
+          validity of backup files. Those files are stored in the repository.
+          While there is no interface to manage them at the moment, they are
+          still available in the file system so a deleted file can be
+          recovered in case of mistake using an FTP client or some other
+          shell;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Hits counting period (days)</emphasis>:
+          page hits are counted for some days to allow to sort pages when no
+          other criteria is available. If you change this value, the new one
+          will be used after a restart of the web application;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Length of page excerpt
+          (characters)</emphasis>: length of the part of page that is stored
+          in the site map for fast retrieving (used in the RSS feed and in
+          some modules);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Always redirect to welcome
+          pages</emphasis>: check this option to ask MeshCMS to check if a
+          welcome file is available when the required URL points to a
+          directory. Usually the servlet container does this, but it is not
+          the case for the default Jetty configuration for example. Setting
+          this option to true allows to achieve a uniform behavior and offers
+          better safety if virtual sites are used (the servlet container is
+          not aware of MeshCMS virtual sites);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Redirect moved pages if
+          possible</emphasis>: if this option is enabled, MeshCMS tries to
+          redirect not found pages to other ones based on file path. Similar
+          paths are matched starting from the end and going up recursively: a
+          page like
+          <uri>www.site.com/products/someproductline/productname</uri> will be
+          successfully redirected to
+          <uri>www.site.com/somedivision/products/someproductline/productname</uri>;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Always deny directory
+          listings</emphasis>: check this option to show an error when a
+          directory is required and there's no welcome file within it. Again,
+          you can achieve the same result by configuring the servlet container
+          properly, but if virtual sites are used it is better to make use of
+          this option instead of relying on the container;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Hide Java exceptions when
+          possible</emphasis>: if this option is checked, MeshCMS tries to
+          catch Java exception and hide its details to site visitors (it will
+          be logged though);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Redirect the home page to one of the
+          available languages</emphasis>: if this option is checked and there
+          is at least a page whose path is equal to a language code (e.g. /en,
+          /it), requests for the home page will be redirected to the language
+          that matches browser preferences (see <xref
+          linkend="multilingual" />);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Disable public access to this
+          website</emphasis>: if this option is checked, you will need to
+          login to see any page of this website.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section id="edit_profile">
+      <title>Edit Profile</title>
+
+      <para>The purpose of this page is simple: you can change your password
+      and edit your profile. Details are optional. The e-mail is optional too,
+      but is located between the required elements since there's the plan to
+      add a simple message board in future.</para>
+    </section>
+
+    <section id="new_user">
+      <title>New User</title>
+
+      <para>To create a new user, you need to specify these info:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">username</emphasis>;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">user type</emphasis>:
+          <option>Administrator</option> has all privileges,
+          <option>Editor</option> can edit pages but can't do admin stuff and
+          <option>Member</option> can browse files and not much more (in fact
+          it is rarely used);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">home directory</emphasis>: the directory
+          in which the user can edit files;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">password</emphasis>: an initial password
+          that can be changed later by the user himself.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>All other fields are optional.</para>
+    </section>
+
+    <section id="file_manager">
+      <title>File Manager</title>
+
+      <para>The MeshCMS file manager is a web-based version of the file
+      manager you probably use daily on your computer. It allows to manage the
+      file system of your website.</para>
+
+      <para>The look &amp; feel of the file manager window should be familiar
+      to everyone. On the left there is the directory tree, while the contents
+      of the currently opened directory are shown on the right. There you can
+      select some items and choose an action from the menu at the top of the
+      window.</para>
+
+      <para>Most of the menu items are easy to understand. Probably the
+      <property>Themes</property> menu is the most <quote>obscure</quote>, in
+      fact it is rarely used. This menu allows to specify what theme should be
+      applied to a page or directory. Normally it's easier to apply themes
+      using the <link linkend="page_manager">Page Manager</link> feature of
+      the Control Panel, but using the file manager you can apply themes even
+      to files not included in the site map. Simply select the desired items
+      and then pick a theme for them. If you choose <option>Don't
+      Specify</option>, the theme will be inherited from the parent directory
+      (this is the default for all items that don't have an associated theme,
+      in fact if you only select a theme for the home page, all other pages
+      will use it). If you choose <option>No Theme</option>, nothing will be
+      applied to that file, which will be shown "as is".</para>
+
+      <note>
+        <para>Since the file manager is a web application, operations are not
+        executed immediately. Commands are sent to the server the usual
+        request-execution-response cycle must happen. While much care has been
+        taken to ensure that command are interpreted correctly, please try to
+        execute one task at a time, making sure you wait it to complete before
+        doing another thing.</para>
+      </note>
+
+      <section id="upload">
+        <title>Upload</title>
+
+        <para>The upload tool is essential, since it is used to add new files.
+        You can upload one file at a time, so if you need to upload many
+        files, you better create a ZIP archive, upload it and finally <link
+        linkend="unzip">unzip</link> it.</para>
+
+        <para>To upload a file, navigate to the desired directory and select
+        <command>Upload</command> from the <option>Tools</option> menu. Then
+        select the file from your computer and start uploading.</para>
+
+        <important>
+          <para>a file with the same name will be overwritten without
+          confirmation.</para>
+        </important>
+      </section>
+
+      <section id="unzip">
+        <title>Unzip</title>
+
+        <para>You can unpack a ZIP archive from within the file manager. It
+        will be unpacked in the same directory or in a subdirectory, so make
+        sure to put it in the right place before unzipping (you can always
+        move the unpacked items later).</para>
+
+        <para>Select the ZIP file (it can have any extension) and choose
+        <command>Unzip</command> from the <option>Tools</option> menu. You'll
+        see a list of the files that are packed into the archive. If you
+        prefer, you can check the flag to unzip the files in a new directory
+        and edit its name. Note that many archives already put all files in a
+        directory: you can verify if this is the case by looking at the list
+        of files.</para>
+
+        <important>
+          <para>this operation is quite dangerous, since it will overwrite
+          files if needed, without backing them up. So it is highly
+          recommended to unzip files in a new directory as described above.
+          Then you can move them safely.</para>
+        </important>
+      </section>
+    </section>
+
+    <section id="site_synchronization">
+      <title>Site Synchronization</title>
+
+      <para>This command allows to copy a site over another one. At the end of
+      the operation, the two websites will be identical, with the exception of
+      generated content (e.g. user comments).</para>
+
+      <para>To take advantage of this feature, you are supposed to create two
+      sites, say <uri>cms.yoursite.com</uri> and <uri>www.yoursite.com</uri>.
+      You use the former to make all changes you need (create/edit/delete
+      pages, upload files, move stuff and so on), then you will copy it over
+      the latter when you want to publish all changes on the live site. If you
+      want to keep your changes secret, you can password protect the first
+      site (see <xref linkend="configure" />).</para>
+
+      <note>
+        <para>this approach is completely optional: you can keep using a
+        single site and change it directly.</para>
+      </note>
+
+      <para>In the interface you can choose the destination site and include
+      or exclude site map information and site configuration from the copy
+      operation. Site map information contains all data that is edited using
+      the <link linkend="page_manager">Page Manager</link>, so it is
+      recommended to include it, while site configuration is generally kept
+      out. Additionally, you need to provide valid user credentials for the
+      target site.</para>
+
+      <important>
+        <para>if you make some changes on the target site, they will be lost
+        when you copy over it, so please remember to use one site for editing
+        and the other for live use.</para>
+      </important>
+    </section>
+
+    <section id="static_export">
+      <title>Static Export</title>
+
+      <para>MeshCMS offers an option to export a static copy of the site. That
+      copy can be served by any HTTP server (e.g. Apache) without the need of
+      a Java Servlet container. For example, you could use static export to
+      edit a site in the Intranet using a local Tomcat, then publishing the
+      site on an external server at any time.</para>
+
+      <para>Please note that the lack of a servlet container means that
+      modules that require server interaction (like <link
+      linkend="module_mail">Mail</link> and <link
+      linkend="module_comments">Comments</link>) won't work as expected. All
+      others will work since their content (e.g. gallery thumbnails) will be
+      generated while exporting.</para>
+
+      <para>To perform a static export, some parameters must be
+      specified:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">URL to get the home page</emphasis>:
+          needs to be explicitly set when the local URL is different from the
+          external one. For example, suppose that your Tomcat is running on a
+          machine named <emphasis>localserver</emphasis>, and that its
+          firewall redirects connections to port 80 to Tomcat, which is
+          running on port 8080. In such a situation, you will access Tomcat
+          externally at <uri>http://localserver/</uri>, while the static
+          export (which accesses pages from the server itself) must use
+          <uri>http://localserver:8080/</uri>, or
+          <uri>http://localhost:8080/</uri>. In this case, the local URL must
+          be specified;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Destination directory</emphasis>: the
+          local path of the exported copy, i.e. where the site will be
+          exported (required);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Check for files that do not need to be
+          updated</emphasis>: if checked, files already exported are not
+          copied again. This works for files whose modification time is newer
+          in the target directory. Please note that pages are always
+          re-exported, since changes could be in generated parts, like menus
+          or modules;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Command to be executed after
+          export</emphasis>: an optional command that can be run when the
+          export is completed. This is a shell command to be executed in a
+          process and could be used to sync the exported site on a FTP
+          connection. As a trivial example, you could use <command>sh -c 'ls
+          -R /my/exporting/dir'</command> or <command>cmd /c "dir /s
+          C:\my\exporting\dir"</command> to get a list of exported
+          files.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section id="site_manager">
+      <title>Site Manager</title>
+
+      <para>The site manager is available for administrators only. It is not
+      available at all in virtual sites. It is used to manage virtual sites
+      and to map domains to sites. If no virtual sites are defined, this page
+      can be used to define the first one. Otherwise, more options are
+      available.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Use directory names as domain
+          names</emphasis>: if true, names of the directories that contain
+          virtual sites will be taken into account when mapping domains to
+          sites;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Automatically manage the "www."
+          prefix</emphasis>: if true, an additional mapping will be used for
+          each domain name specified, to map the same domain with the www
+          prefix added. This parameter applies to <emphasis>all</emphasis>
+          domain names defined;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Domain aliases for the main
+          website</emphasis>: a comma-separated list of domain names that must
+          point to the main website. If no domain names are specified, all
+          domain names that are not mapped to other sites will point to the
+          main site. If at least a domain is specified and an unlisted domain
+          is requested, MeshCMS will send a server error as response;</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">CMS enabled</emphasis>: a flag that
+          indicates that the CMS is active in that website (otherwise it is
+          just a static website);</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis role="bold">Block JSPs</emphasis>: allows to limit
+          the usage of JSP pages in that site for security reasons. It relies
+          on a code filter that should allow harmless operations only
+          Currently, it allows to:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>use the MeshCMS taglib with the
+              <code><code>cms</code></code> prefix;</para>
+            </listitem>
+
+            <listitem>
+              <para>use the <code>page</code> JSP directive;</para>
+            </listitem>
+
+            <listitem>
+              <para>use JSP comments;</para>
+            </listitem>
+
+            <listitem>
+              <para>use HTML (tags, doctypes and comments).</para>
+            </listitem>
+          </itemizedlist>
+
+          <note>
+            <para>This block may result in a strong limit for the website,
+            since themes can only use the taglib and legal custom modules are
+            nearly useless.</para>
+          </note>
+        </listitem>
+      </itemizedlist>
+
+      <para>After these options, a table of virtual sites follows. For each
+      site the directory name is shown and a check indicates that the CMS is
+      active for that site. It is possible to add or modify a comma-separated
+      list of domains that will be mapped to that site.</para>
+
+      <para>At the end of the list, a blank row is available to create a new
+      site. You must specify the directory name and optionally add aliases and
+      enable the CMS.</para>
+
+      <para>Please be careful when specifying domain names: if a domain is
+      mapped to more than one site, it is hard to know which one will be
+      associated to that domain.</para>
+    </section>
+  </chapter>
+
+  <chapter id="modules">
+    <title>Modules</title>
+
+    <section id="standard_modules">
+      <title>Standard Modules</title>
+
+      <para>A web page is not just a block of text. Many pages on the web
+      perform some common tasks: image galleries, mail forms, news and so on.
+      While one can just write down those pages each time, it is clear that
+      some automation is possible in those cases. The MeshCMS answer to this
+      demand is the concept of <firstterm>module</firstterm>. A module is a
+      configurable zone in a page: when you edit the page, you have some boxes
+      where you can select a module and provide an
+      <firstterm>argument</firstterm> (usually a file or directory) and some
+      advanced parameters. If the argument is not specified, modules behave
+      differently: some can default to the directory that contains the page,
+      while others will do nothing.<note>
+          <para>the argument of a module is not necessarily a directory or a
+          file. For example, in the mail module you can specify an e-mail
+          address as argument, and a standard form will be created using that
+          address as recipient.</para>
+        </note></para>
+
+      <para>When you edit a page, you will have the chance to configure as
+      many modules as the page theme specifies. Normally all themes should
+      contain a module at least. For each module you can also set a title and
+      some advanced parameters. The former can be displayed in the page or
+      not, according to the theme used. The latters depend on the module used
+      and allow to customize it further, although modules are expected to
+      provide an adequate default behavior when no parameters are
+      specified.</para>
+
+      <para>MeshCMS provides some modules, and others can be created by
+      everyone that is able to write a JSP page. Details about available
+      modules are illustrated in the following sections.</para>
+
+      <section id="module_audio_player">
+        <title>Audio Player</title>
+
+        <para>The audio player module shows a MP3 player using the Flash-based
+        <ulink url="http://musicplayer.sourceforge.net/">XSPF Web Music
+        Player</ulink>. It will play all the MP3 files that are available in
+        the directory passed as argument.</para>
+
+        <para>Argument: path to a file or directory. If not provided, defaults
+        to the directory that contains the current page.</para>
+      </section>
+
+      <section id="module_blog">
+        <title>Blog</title>
+
+        <para>The blog module shows a preview of pages in a directory using a
+        blog-like interface: content is truncated to a maximum length and
+        links to full pages are provided. Pages are ordered by date and meta
+        keywords are displayed as "article tags".</para>
+
+        <para>Starting from version 3.5, this module is highly configurable
+        and can replace other modules like Most Visited and</para>
+
+        <para>Argument: path to a file or directory. If not provided, defaults
+        to the directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date</parameter>: the type of file date to be
+            shown. Possible values are <option>none</option> (default),
+            <option>normal</option> (date only) and <option>full</option>
+            (date and time);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>sort</parameter>: the preferred sorting order.
+            Accepted values are <option>newest</option> (default, newest
+            articles first) and <option>mostviewed</option> (most viewed
+            articles first);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>mode</parameter>: the text rendering, can be
+            <option>html</option> (default) or <option>text</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>entries</parameter>: number of entries per page
+            (default <option>5</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>maxchars</parameter>: maximum length of the
+            excerpt for each article (default as per site
+            configuration);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>history</parameter>: shows a link to previous
+            articles, <option>true</option> (default) or
+            <option>false</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>keywords</parameter>: shows keywords (tags) after
+            each article, <option>true</option> (default) or
+            <option>false</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>readlink</parameter>: shows a link to the full
+            article after the excerpt, <option>true</option> (default) or
+            <option>false</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>updatedate</parameter>: updates page last
+            modified time, <option>true</option> (default) or
+            <option>false</option>. Note that this does not change the last
+            modified time on disk, unless explicitly required by the <link
+            linkend="tag_lastmodified">lastmodified tag</link>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>imagesize</parameter>: size in pixels of article
+            images (images that are in the same folder have a name in the
+            required format, i.e. <code>index_image.jpg</code> for
+            <code>index.html</code> or <code>page_image.jpg</code> for
+            <code>page.html</code>); if this parameter is not specified,
+            images are not shown even if available;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>tag</parameter>: if specified, only pages with
+            that tag will be shown in the blog.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_blog_calendar">
+        <title>Blog Calendar</title>
+
+        <para>The blog calendar module shows a list of months/years to select
+        articles in a specific month. It has been thought to be used in the
+        same page as the blog module.</para>
+
+        <para>Argument: path to a file or directory. If not provided, defaults
+        to the directory that contains the current page.</para>
+      </section>
+
+      <section id="module_blog_tag_list">
+        <title>Blog Tag List</title>
+
+        <para>The blog tag list module shows a list of tags to select articles
+        marked with a specific tag. It has been thought to be used in the same
+        page as the blog module.</para>
+
+        <para>Argument: path to a file or directory. If not provided, defaults
+        to the directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>step</parameter>: step for item css classes
+            (default <option>1</option> - use <option>0</option> to remove
+            classes);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>max</parameter>: maximum for item css classes
+            (default no maximum).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_chat">
+        <title>Chat</title>
+
+        <para>The chat module has been created by Pierre Métras and provides a
+        simple, AJAX-based chat. To use it, simply select the module: no
+        argument is needed.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>room</parameter>: chat room identifier, else use
+            public room shared by all pages and all sites;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>cols</parameter>: number of columns of the chat
+            list;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>rows</parameter>: number of rows of the chat
+            list.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_comments">
+        <title>Comments</title>
+
+        <para>The comments module creates a form that allows site visitors to
+        leave comments on that page. Authenticated users with edit permissions
+        on that page can delete unwanted comments by visiting the page
+        itself.</para>
+
+        <para>Argument: path to a directory used to hold comments. If not
+        provided, a default directory will be used.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>date</parameter>: the type of file date to be
+            shown. Possible values are <option>none</option> (default),
+            <option>normal</option> (date only) and <option>full</option>
+            (date and time);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>form_css</parameter>: the ccs class of the
+            <option>div</option> that contains the entire form. The default
+            value is <option>mailform</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>field_css</parameter>: the css class of the
+            individual form fields. The default value is
+            <option>formfields</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>notify</parameter>: an optional e-mail address to
+            receive comment notifications;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>html</parameter>: if <option>true</option>, shows
+            a basic HTML editor (default <option>false</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>parse</parameter>: if <option>true</option> (and
+            if <parameter>html</parameter> is <option>false</option>),
+            activates hyperlinks in comments (default
+            <option>false</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>max_age</parameter>: maximum number of days after
+            which comments are not shown (default no maximum);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>moderated</parameter>: hides comments until
+            approved by an authenticated user (default
+            <option>false</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>math</parameter>: asks users to calculate the sum
+            of two numbers (default <option>false</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>captcha</parameter>: shows a CAPTCHA image
+            (default <option>true</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_diary">
+        <title>Diary</title>
+
+        <para>The diary module creates a page showing the first words of a
+        list of pages with links to the full pages, in a similar fashion to
+        the <link linkend="module_headlines">headlines</link> module. The
+        Diary module allows you to filter and sort the summarized pages by
+        date. The date used for sorting can be specified in two
+        ways:<itemizedlist>
+            <listitem>
+              <para>By including the date in the page, and surrounding it in a
+              CSS style, either in a <code>&lt;div&gt;</code> or
+              <code>&lt;span&gt;</code> element. The default style is
+              <option>diary-date</option>. The date itself must be in the
+              <option>normal</option> date format, for example as output by
+              the <link linkend="tag_lastmodified">lastmodified</link> tag. If
+              you add the <option>diary-date</option> style to your theme
+              stylesheet, you can use the page editor to easily tag the date
+              in a page.</para>
+            </listitem>
+
+            <listitem>
+              <para>If the date is not specified in the page, the last
+              modified date of the file is used. This can be set using the
+              <link linkend="file_manager">File Manager</link> if
+              required.</para>
+            </listitem>
+
+            <listitem>
+              <para>If the date us set to the string <code>IGNORE_FILE</code>,
+              the file will be ignored and will not be indexed by the Diary
+              module.</para>
+            </listitem>
+          </itemizedlist></para>
+
+        <para>Argument: path to a directory. If not provided, defaults to the
+        directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: The name of a css class, for
+            displaying the generated list;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date</parameter>: The date format to be used for
+            labelling the list entries. <option>none</option> (default),
+            <option>normal</option> (date only) or <option>full</option> (date
+            and time);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>start:</parameter> The date to start the listing
+            from, either in <option>normal</option> format or as an offset
+            from today of the form <option>[+-]NN[dwmy]</option>, where [dwmy]
+            is the unit type - days, weeks, months, years and NN is the number
+            of days, weeks, months or years. The default is the current
+            date;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>period</parameter>: The period for which entries
+            are to be displayed (default is all past entries);</para>
+
+            <itemizedlist>
+              <listitem>
+                <para><option>+</option> all future entries</para>
+              </listitem>
+
+              <listitem>
+                <para><option>-</option> all past entries</para>
+              </listitem>
+
+              <listitem>
+                <para><option>+-</option> all entries, sorted new to
+                old</para>
+              </listitem>
+
+              <listitem>
+                <para><option>-+</option> all entries, sorted old to
+                new</para>
+              </listitem>
+
+              <listitem>
+                <para><option>[+-]NN[dwmy]</option> entries within a specified
+                period, in the same format as the <parameter>start</parameter>
+                parameter</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date-style</parameter>: CSS style used to tag the
+            date used for sorting (default =
+            <option>diary-date</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>words</parameter>: The number of words to display
+            for each item (default = 50);</para>
+          </listitem>
+
+          <listitem>
+            <para>items: The maximum number of entries to display in the list,
+            where -1 means all entries, default = 5.</para>
+          </listitem>
+        </itemizedlist>
+
+        <example>
+          <title>An example of tagging a date so that it is used to sort the
+          page. Be sure to format the date appropriately for the locale you
+          are using:</title>
+
+          <para><programlisting>&lt;h1&gt;Date: &lt;span class="diary-date"&gt;01-Dec-2006&lt;/span&gt;&lt;/h2&gt;</programlisting></para>
+        </example>
+
+        <example>
+          <title>An example showing how to use IGNORE_FILE to skip the
+          indexing a file. The 'hide' style is used to stop the IGNORE_FILE
+          string from being displayed.</title>
+
+          <para><programlisting>&lt;span class="diary-date hide"&gt;IGNORE_FILE&lt;/span&gt;</programlisting></para>
+        </example>
+
+        <example>
+          <title>An example using advanced parameters to display all future
+          entries:</title>
+
+          <para><programlisting>period=+, items=-1</programlisting></para>
+        </example>
+
+        <example>
+          <title>An example using advanced parameters to display entries
+          starting at a specified date, for a specified period. Again, the
+          date needs to be formatted appropriately for the locale you are
+          using:</title>
+
+          <para><programlisting>start=01-Jan-2006, period=-6m, items=-1</programlisting></para>
+        </example>
+
+        <example>
+          <title>An example of diary entries starting 1 year ago, forwards for
+          a period of 1 month. If there are more than 10 entries only the
+          first 10 would be shown:</title>
+
+          <para><programlisting>start=-1y, period=+1m, items=10</programlisting></para>
+        </example>
+      </section>
+
+      <section id="module_downloads">
+        <title>Downloads</title>
+
+        <para>The downloads module creates a list of downloadable files. An
+        icon and the size are shown near the name of each file.</para>
+
+        <para>Argument: path to a file or directory. If not provided, the
+        module does nothing.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date</parameter>: the type of file date to be
+            shown. Possible values are <option>none</option> (default),
+            <option>normal</option> (date only) and <option>full</option>
+            (date and time);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>force</parameter>: forces download even for files
+            that could be viewed in the browser (default
+            <option>true</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_embed">
+        <title>Embed</title>
+
+        <para>The embed module is useful to embed code snippets in the page
+        (e.g. YouTube videos).</para>
+
+        <para>Argument: code snippet or path to a file that contains the code
+        to be inserted. If not provided, the module does nothing.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>delay</parameter>: uses JavaScript to embed the
+            code after page load (default <option>false</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_frame">
+        <title>Frame</title>
+
+        <para>The frame module allows to display an external page in an
+        IFrame.</para>
+
+        <para>Argument: path or URL of the page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>height</parameter>: the height of the IFrame
+            (default <option>40em</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_gallery">
+        <title>Gallery</title>
+
+        <para>The gallery module creates thumbnails for a list of images.
+        Thumbnails link to full images, and file names are used as
+        captions.</para>
+
+        <para>Argument: path to a file or directory. If not provided, defaults
+        to the directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>captions</parameter>: defines if the captions
+            must be shown or not. Values are <option>true</option> (default)
+            and <option>false</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>columns</parameter>: defines the number of
+            columns (default <option>3</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>quality</parameter>: defines the algorithm used
+            to create the thumbnails. Values are <option>low</option> and
+            <option>high</option> (default). High quality requires more CPU
+            and RAM (thumbnails are cached anyway);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>order</parameter>: defines the sort order of the
+            thumbnails. Values are <option>name</option> (default),
+            <option>date</option> or <option>date_fwd</option> (sort forwards
+            by date), <option>date_rev</option> (sort reversed by date),
+            <option>random</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>lightbox</parameter>: if <option>true</option>,
+            the Lightbox script is used to show images (default
+            <option>false</option>). Please check that it is compatible with
+            your theme.</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>colorbox</parameter>: if <option>true</option>,
+            the Colorbox script is used to show images (default
+            <option>false</option>). Please check that it is compatible with
+            your theme.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>By default, the labels which are displayed under the thumbnails
+        are generated from the image filenames, using the following
+        steps:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>The file suffix is removed;</para>
+          </listitem>
+
+          <listitem>
+            <para>All underscores are replaced with spaces;</para>
+          </listitem>
+
+          <listitem>
+            <para>The first character of each resulting word is converted to
+            title (upper) case.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>So by formatting the image filenames appropriately you can
+        specify the thumbnail label. If this proves inconvenient, for example
+        if you want to order the files by name but want to use different
+        thumbnail labels, or if you want to use characters that are not valid
+        as part of a filename, you can specify the thumbnail labels in a
+        seperate text file. This file is called
+        <option>gallery.captions</option> and must be in the same directory as
+        the image files to which it refers. The format of this file is simple:
+        it must contain a block for each required thumbnail caption. Blocks
+        are seperated by a blank line, and each block consists of single image
+        filename on a line, followed by one or more lines of caption text. If
+        one of those lines starts with <literal>link:</literal>, it will be
+        used as URL instead of the full image. An example is given
+        below.</para>
+
+        <example>
+          <title>An example gallery.captions file, containing thumbnail
+          captions for three files:</title>
+
+          <programlisting>image_01.jpg
+This is the first image
+
+image_02.jpg
+This is the
+second image
+
+image_03.jpg
+link: http://www.yoursite.com
+This is the third image</programlisting>
+        </example>
+      </section>
+
+      <section id="module_headlines">
+        <title>Headlines</title>
+
+        <para>The headlines module shows the first words of a list of pages,
+        adding links to go to the full pages.</para>
+
+        <para>Argument: path to a directory. If not provided, defaults to the
+        directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date</parameter>: the type of file date to be
+            shown. Possible values are <option>none</option> (default),
+            <option>normal</option> (date only) and <option>full</option>
+            (date and time);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>maxchars</parameter>: maximum length of the
+            excerpt for each page (default <option>500</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_include">
+        <title>Include</title>
+
+        <para>The include module adds the contents of a list of pages.</para>
+
+        <para>Argument: path to a file or directory. If not provided, the
+        module does nothing.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date</parameter>: the type of file date to be
+            shown. Possible values are <option>none</option> (default),
+            <option>normal</option> (date only) and <option>full</option>
+            (date and time);</para>
+          </listitem>
+
+          <listitem>
+            <para>sort: file sorting. Can be <option>newest</option> (default)
+            or <option>alphabetical</option>.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_include_as_text">
+        <title>Include As Text</title>
+
+        <para>The include as text module adds the contents of a list of files
+        as plain text (i.e. inside a <code>&lt;pre&gt;</code> tag).</para>
+
+        <para>Argument: path to a file or directory. If not provided, the
+        module does nothing.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_latest_changes">
+        <title>Latest Changes</title>
+
+        <para>The latest changes module shows the first words of the most
+        recently modified pages, adding links to go to the full pages.
+        Modified pages are searched in subdirectories too.</para>
+
+        <para>Argument: path to a directory. If not provided, defaults to the
+        directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date</parameter>: the type of file date to be
+            shown. Possible values are <option>none</option> (default),
+            <option>normal</option> (date only) and <option>full</option>
+            (date and time);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>maxchars</parameter>: maximum length of the
+            excerpt for each article (default <option>500</option>).</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>items</parameter>: defines the number of pages to
+            show (default <option>5</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_list_pages">
+        <title>List Pages</title>
+
+        <para>The list pages module creates a list of links to the pages
+        contained in the given directory.</para>
+
+        <para>Argument: path to a file or directory. If not provided, defaults
+        to the directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_mail">
+        <title>Mail</title>
+
+        <para>The mail module creates a mail form. This allows visitors to
+        your site to send you mail without you having to expose your email
+        addresses on your site.</para>
+
+        <para>Argument: email address or path to mail form definition file
+        (see below).</para>
+
+        <para>Advanced parameters:</para>
+
+        <para><itemizedlist>
+            <listitem>
+              <para><parameter>form_css</parameter>: the ccs class of the
+              <option>div</option> that contains the entire form. The default
+              value is <option>mailform</option>;</para>
+            </listitem>
+
+            <listitem>
+              <para><parameter>field_css</parameter>: the css class of the
+              individual form fields. The default value is
+              <option>formfields</option>.</para>
+            </listitem>
+          </itemizedlist><remark>Note</remark>: There is a bug in Internet
+        Explorer 6 that affects the display of the <option>textarea</option>
+        form component. This results in the <option>textarea</option> being
+        resized inappropriately as soon as text is entered into it. The
+        workaround is to explicitly set the width of the <option>div</option>
+        containing the form, and to set the width of the contained fields to
+        <option>100%</option>. The default ccs for the
+        <option>mailform</option> and <option>formfields</option> styles does
+        this to avoid the bug, be aware of this if you choose to modify or
+        override these styles.</para>
+
+        <para>The mail module can be used in one of two ways:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>you can specify an e-mail address as argument. A simple form
+            will be inserted into the page and the address you entered will
+            receive the messages. The form can't be customized, but this
+            method is very easy to apply and will be enough for most
+            situations;</para>
+          </listitem>
+
+          <listitem>
+            <para>you can specify the name of a text file as argument. In this
+            case, the form will be created accorded to the instructions
+            contained in that file. This method offers more options and will
+            be described in the rest of this section, since it requires you to
+            learn the syntax used in the text file.</para>
+          </listitem>
+        </orderedlist>
+
+        <para>In both cases, messages sent through a mail form will be
+        delivered to an address you specify (which will not be visible to
+        anyone viewing your site, since it's not displayed in the page and not
+        included in its source).</para>
+
+        <para>To create a form using the second method, you must write a text
+        file that adheres to a specific syntax. As a first example, let's
+        create the simplest form you could use (similar to the one provided by
+        method 1, above):</para>
+
+        <programlisting>recipient:name@site.com
+
+Name
+
+E-mail
+email
+sender
+
+Message
+text:12
+
+Send
+submit</programlisting>
+
+        <para>Field definition blocks are separated by empty lines. The first
+        line of each block ia a field name on the resulting form. Let's look
+        at each block separately:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>the first line specifies the <option>recipient</option>
+            address;</para>
+          </listitem>
+
+          <listitem>
+            <para>"Name" is a text field. This is the default when no other
+            parameters are specified;</para>
+          </listitem>
+
+          <listitem>
+            <para>"E-mail" is a text field that is expected to contain an
+            <option>e-mail</option> address (a check will be executed to
+            verify this condition). Its value will be used as
+            <option>sender</option> address;</para>
+          </listitem>
+
+          <listitem>
+            <para>"Message" and is a text area of <option>12</option>
+            rows;</para>
+          </listitem>
+
+          <listitem>
+            <para>the next element is a <option>submit</option> button whose
+            label is "Send this message".</para>
+          </listitem>
+        </orderedlist>
+
+        <para>Here's how to add a drop down box:</para>
+
+        <programlisting>recipient:name@site.com
+
+Name
+
+E-mail
+email
+sender
+
+<emphasis role="bold">Topic
+options: Information, Support Request, Feedback</emphasis>
+
+Message
+text:16
+
+Send Now
+submit</programlisting>
+
+        <para>Other notes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>the default field type is <option>text</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>number</option> field type can be used for
+            fields that require a numeric value;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>reset</option> field inserts a reset button. A
+            label can be specified as for the <option>submit</option>
+            button;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>textarea</option> field type is a synonym for
+            <option>text:12</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>value</option>: line can be used to provide a
+            default value for all fields of type <option>text</option>,
+            <option>email</option>, <option>number</option> and
+            <option>textarea</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>options</option>: line can be used to provide a
+            list of values for a drop-down box;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>sendername</option> attribute indicates that the
+            field value is to be used as name of the sender;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>sender</option> attribute indicates that the
+            field value is to be used as the email address of the
+            sender;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>subject</option> attribute indicates that the
+            field value will be the subject of the message;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>message</option> attribute will insert the field
+            value "as is", i.e. without specifying a field name;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>required</option> attribute may be specified to
+            make a field mandatory. Required fields are shown in bold by
+            default;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>hidden</option> attribute can be used to include
+            a non-displaying value in the form;</para>
+          </listitem>
+
+          <listitem>
+            <para>the <option>messagebody</option> attribute can be used to
+            identify the field to be used as the body of the generated
+            email;</para>
+          </listitem>
+
+          <listitem>
+            <para>buttons are inserted at the end of the form, regardless of
+            the field order;</para>
+          </listitem>
+
+          <listitem>
+            <para>each parameter (field name, field type, options, etc.) must
+            be on a single line.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>A more complex example is shown here:</para>
+
+        <programlisting>recipient:name@site.com
+
+Note
+hidden
+value: This is a hidden note
+
+Name
+sendername
+
+E-mail
+email
+sender
+
+Gender
+options: male, female
+
+Age
+options: less than 13, 13-20, 21-30, 31-40, 41-50, 51-60, more than 60
+
+Subject
+subject
+value: Hello
+required
+
+Message
+text:16
+required
+
+Send Now
+submit
+
+Reset All Fields
+reset</programlisting>
+
+        <para>And here's how it looks in the browser:</para>
+
+        <screenshot>
+          <screeninfo>Mail form</screeninfo>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="sample_mail_form.png" />
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+
+        <para>Finally, this is the default MeshCMS form in English (the
+        recipient is not specified, since it is added in the page
+        editor):</para>
+
+        <programlisting>Name
+sendername
+
+E-mail
+email
+sender
+
+Message
+textarea
+messagebody
+
+Send Now
+submit</programlisting>
+      </section>
+
+      <section id="module_most_visited">
+        <title>Most Visited</title>
+
+        <para>The most visited module shows the first words of the pages that
+        have been viewed more times in the latest days, adding links to go to
+        the full pages. Pages are searched in subdirectories too.</para>
+
+        <para>Argument: path to a directory. If not provided, defaults to the
+        directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>css</parameter>: the name of a css class;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date</parameter>: the type of file date to be
+            shown. Possible values are <option>none</option> (default),
+            <option>normal</option> (date only) and <option>full</option>
+            (date and time);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>maxchars</parameter>: maximum length of the
+            excerpt for each article (default <option>500</option>).</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>items</parameter>: defines the number of pages to
+            show (default <option>5</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>minvisits</parameter>: minimum number of page
+            views that a page must have to be included in the list (default
+            <option>0</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_parse">
+        <title>Parse</title>
+
+        <para>The parse module includes a list of files using the
+        <code>pageContext.include()</code> Java method.</para>
+
+        <para>Argument: path to a file or directory. If not provided, the
+        module does nothing.</para>
+      </section>
+
+      <section id="module_site_map">
+        <title>Site Map</title>
+
+        <para>The site map module creates a site map using an HTML unordered
+        list.</para>
+
+        <para>Argument: path to a directory. If not provided, the site map
+        will start from the directory that contains the current page.</para>
+
+        <para>Advanced parameters:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>allowHiding</parameter>: defines if the module
+            honours the "hide submenu" option or not. Values are
+            <option>false</option> (default) and <option>true</option>;</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="module_video_player">
+        <title>Video Player</title>
+
+        <para>The video player module shows a FLV video player using the
+        Flash-based <ulink
+        url="http://flowplayer.sourceforge.net/">FlowPlayer</ulink>. It will
+        play all the FLV files that are available in the directory passed as
+        argument.</para>
+
+        <para>Argument: path to a file or directory. If not provided, defaults
+        to the directory that contains the current page.</para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter id="tag_library">
+    <title>Tag Library</title>
+
+    <para>MeshCMS provides a library of custom tags to ease the creation of
+    themes. Some are mandatory, others can be useful in many situations. The
+    following sections explain each tag separately. As an example, the
+    <code>&lt;mesh:tagname&gt;</code> format is used, which implies the
+    following declaration at the beginning of the theme file:</para>
+
+    <programlisting>&lt;%@ taglib uri="meshcms-taglib" prefix="mesh" %&gt;</programlisting>
+
+    <para>Mandatory tags are: <link linkend="tag_editor">editor</link>, <link
+    linkend="tag_pagehead">pagehead</link> and <link
+    linkend="tag_pagebody">pagebody</link>.</para>
+
+    <section id="tags_mandatory">
+      <title>Mandatory Tags</title>
+
+      <para>These tags must be included in all themes.</para>
+
+      <section id="tag_editor">
+        <title>editor</title>
+
+        <para>This tag is <emphasis>mandatory</emphasis> and must enclose all
+        tags of type <code>pagebody</code>, <code>module</code> and
+        <code>mailform</code> in the theme file. Since these three tags are
+        always used inside the HTML <code>&lt;body&gt;</code> tag, usually the
+        <code>editor</code> is inserted immediately after the
+        <code>&lt;body&gt;</code>:</para>
+
+        <programlisting>&lt;html&gt;
+...
+&lt;body&gt;&lt;mesh:editor&gt;
+... body content...
+&lt;/mesh:editor&gt;&lt;/body&gt;
+&lt;/html&gt;</programlisting>
+
+        <para>The purpose of this tag is to insert a <code>&lt;form&gt;</code>
+        element when the page is being edited. For that reason, you must also
+        enclose any other <code>&lt;form&gt;</code> tag into a
+        <code>ifnotediting</code> tag, so your forms won't be shown during
+        page editing (HTML does not allow nested forms).</para>
+      </section>
+
+      <section id="tag_pagehead">
+        <title>pagehead</title>
+
+        <para>Inserts some headers found in the page. This tag is
+        <emphasis>mandatory</emphasis> since it is needed when editing
+        pages.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>dropScripts</parameter>: if
+            <option>true</option>, <code>&lt;script&gt;</code> tags are
+            discarded (default <option>false</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>dropStyles</parameter>: if <option>true</option>,
+            <code>&lt;style&gt;</code> tags are discarded (default
+            <option>false</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_pagebody">
+        <title>pagebody</title>
+
+        <para>Inserts the body of the page. This tag is
+        <emphasis>mandatory</emphasis> since it is needed when editing pages
+        (it makes no sense to have a theme that does not show the contents of
+        the page anyway). This tag has no attributes.</para>
+      </section>
+    </section>
+
+    <section id="tags_page_design">
+      <title>Page Design Tags</title>
+
+      <para></para>
+
+      <section id="tag_setlocale">
+        <title>setlocale</title>
+
+        <para>Sets a locale that will be used in the page. Other MeshCMS
+        components will refer to that locale to display some string such as
+        dates, mail form field names and so on.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>value</parameter>: the locale name. Please note
+            that this attribute is <emphasis>not</emphasis> required. If not
+            provided, it will be searched in the path of the requested page,
+            starting from left to right. For example, if the URL is
+            <uri>http://www.site.com/web/en/products/index.html</uri>, the
+            locale will be set to
+            <parameter><parameter>en</parameter></parameter>. If no valid
+            locale is found in the page path, no locale will be set;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>defaultValue</parameter>: same as
+            <parameter>value</parameter>, but will be set only if not found in
+            the URL;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>redirectRoot</parameter>: if
+            <option>true</option>, and if a language is available, the root
+            page is automatically redirected to one of the language
+            roots.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_defaultcss">
+        <title>defaultcss</title>
+
+        <para>Creates a link to the default style sheets for that page and for
+        the additional. You can use it (recommended) or import/link styles as
+        usual. This tag has no attributes.</para>
+      </section>
+
+      <section id="tag_contextpath">
+        <title>contextpath</title>
+
+        <para>Inserts the context path, i.e. the value of
+        <code>HttpServletRequest.getContextPath()</code>. Useful for absolute
+        paths, since the context path might be added when the web application
+        context is not root in its host. This tag has no attributes.</para>
+
+        <example>
+          <title>An absolute link</title>
+
+          <programlisting>&lt;a href="&lt;mesh:contextpath /&gt;/dir/page.html"&gt;An absolute link&lt;/a&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_themepath">
+        <title>themepath</title>
+
+        <para>Inserts the complete path of the directory that contains the
+        current theme. Very useful to insert files of the theme itself. This
+        tag has no attributes.</para>
+
+        <example>
+          <title>Insert an image located in the theme directory</title>
+
+          <programlisting>&lt;img src="&lt;mesh:themepath /&gt;/logo.jpg"&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_adminpath">
+        <title>adminpath</title>
+
+        <para>Inserts the complete path of the admin directory. This tag has
+        no attributes.</para>
+      </section>
+
+      <section id="tag_searchfile">
+        <title>searchfile</title>
+
+        <para>Finds a file by name in the page directory, going up to the root
+        until the file is found.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>name</parameter>: the file name
+            (required);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>defaultName</parameter>: a default file to be
+            used if the searched file is not found. This default file is
+            supposed to exist in the theme directory;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>include</parameter>: if <option>true</option>,
+            the contents of the file are included, otherwise the file path is
+            inserted.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section id="tags_page_elements">
+      <title>Page Elements Tags</title>
+
+      <section id="tag_pagetitle">
+        <title>pagetitle</title>
+
+        <para>This tag prints the title of the page. It has one
+        attribute:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>default</parameter>: default title to be used
+            when the page has no title. This attribute is optional and its
+            default value is <code>&amp;nbsp;</code>.</para>
+          </listitem>
+        </itemizedlist>
+
+        <example>
+          <title>A simple title</title>
+
+          <programlisting>&lt;title&gt;My Site: &lt;mesh:pagetitle /&gt;&lt;/title&gt;</programlisting>
+        </example>
+
+        <note>
+          <para>the use of <code>pagetitle</code> is not limited to the HTML
+          <code>&lt;title&gt;</code> tag: you can use it elsewhere to repeat
+          the title of the page, and you can use anything else within the HTML
+          <code>&lt;title&gt;</code> tag.</para>
+        </note>
+      </section>
+
+      <section id="tag_module">
+        <title>module</title>
+
+        <para>This tag allows to include a <link
+        linkend="modules">module</link> in the place where it is located in
+        the page.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>name</parameter>: the description of the module
+            content, in the form <option>template:argument</option>. The
+            template can be omitted: in this case the colon can be omitted
+            too, and the Include template will be used. The fact that this
+            attribute is called name can be misleading: it is a heritage of a
+            previous version;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>date</parameter>: the format of the date. This is
+            passed to the include template and might be used or not (for
+            example <classname>Include</classname> uses it). Possible values
+            are <option>none</option> (default), <option>normal</option> and
+            <option>full</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>style</parameter>: a css style. This is passed to
+            the include template and might be used or not (for example
+            <classname>Include</classname> uses it). Default is no
+            style;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>location</parameter> (required): the name of the
+            module location. <emphasis>All modules in a theme must have
+            different location names</emphasis>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>alt</parameter>: a string that is inserted when
+            the module is not used (default
+            <option>&amp;nbsp;</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>parameters</parameter>: a string that contains
+            advanced module parameters and their values.</para>
+          </listitem>
+        </itemizedlist>
+
+        <example>
+          <title>A fixed module that includes some files located in the
+          <filename>/include/news</filename> directory</title>
+
+          <programlisting>&lt;mesh:module location="news" name="includes/news" date="normal" style="news" /&gt;</programlisting>
+        </example>
+
+        <example>
+          <title>A module that can be configured while editing the
+          page</title>
+
+          <programlisting>&lt;mesh:module location="bottom" /&gt;</programlisting>
+        </example>
+
+        <example>
+          <title>A module that shows a site map starting from the directory of
+          the page, using <code>(none)</code> to pass an empty
+          argument:</title>
+
+          <programlisting>&lt;mesh:module location="sitemap" name="site_map:(none)" /&gt;</programlisting>
+        </example>
+
+        <para>A note about locations: suppose to edit some pages using a theme
+        that contains two configurable modules, whose locations are left and
+        bottom. Modules will be saved in the page with those location names.
+        If you change theme, those modules will appear if the new theme
+        contains configurable modules with the same location names. So it
+        suggested to use common names for module locations. This is a possible
+        convention:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><option>left</option> for a module in the left
+            column;</para>
+          </listitem>
+
+          <listitem>
+            <para><option>right</option> for a module in the right
+            column;</para>
+          </listitem>
+
+          <listitem>
+            <para><option>top</option> for a module at the top of the
+            page;</para>
+          </listitem>
+
+          <listitem>
+            <para><option>bottom</option> for a module at the bottom of the
+            page;</para>
+          </listitem>
+
+          <listitem>
+            <para>numbers for modules below others (<option>left2</option>,
+            <option>right2</option>, etc.)</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>There's no limit to the number of modules that can be specified
+        in a theme.</para>
+      </section>
+
+      <section id="tag_moduletitle">
+        <title>moduletitle</title>
+
+        <para>This tag displays the title of a <link
+        linkend="modules">module</link>.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>location</parameter> (required): the name of the
+            module location;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>pre</parameter>: a text to be added before the
+            date. It won't be added if the title is not shown;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>post</parameter>: a text to be added after the
+            date. It won't be added if the title is not shown.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_adminmenu">
+        <title>adminmenu</title>
+
+        <para>This tag inserts a menu to access some specific MeshCMS
+        functions when the user has logged in:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">Control Panel</emphasis>: a link to
+            the Control Panel;</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">Edit this page</emphasis>: a link to
+            edit the current page visually;</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">Edit source</emphasis>: a link to edit
+            the source of the current page;</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">Clean HTML</emphasis>: a link to edit
+            the source of the current page after having it cleaned with jTidy,
+            that tries to convert any page into well-formed XHTML;</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">New page</emphasis>: a link to create
+            a new page at the same level of the current one;</para>
+          </listitem>
+
+          <listitem>
+            <para><emphasis role="bold">New child page</emphasis>: a link to
+            create a new child page.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>Some links won't appear if they are not appropriate. If no user
+        has logged in, the behavior depends on the mode attribute. You should
+        always use this tag in a theme, since it offers the most comfortable
+        way to edit pages.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>mode</parameter>: what to display before a user
+            has logged in. There are 2 possible values:
+            <option>normal</option> (default) displays a link to the login
+            page and <option>hidden</option> shows nothing.</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>separator</parameter>: the text between elements
+            (default is a space);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>style</parameter>: a css style for links (default
+            is no style).</para>
+          </listitem>
+        </itemizedlist>
+
+        <example>
+          <title>A vertical admin menu</title>
+
+          <programlisting>&lt;mesh:adminmenu separator="&lt;br /&gt;" /&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_mailform">
+        <title>mailform</title>
+
+        <para>Creates a standard form to send e-mail messages. This can be
+        used to receive a feedback from visitors. The form will only appear in
+        pages that have a recipient specified (it can be set when editing the
+        page). This tag has no attributes.</para>
+
+        <para>Starting from MeshCMS 3.0, the same functionality can be
+        achieved by using the <link linkend="module_mail">mail module</link>
+        and specifying the e-mail address as argument, so it's up to the theme
+        designer to decide if it is worth to use this tag.</para>
+      </section>
+
+      <section id="tag_feed">
+        <title>feed</title>
+
+        <para>Creates a standard RSS feed tag. It must be used in the page
+        head.</para>
+
+        <para>The RSS feed can display an image for each page in the feed:
+        those images must be in the same folder of their pages and their name
+        must be in the required format, i.e. <code>index_image.jpg</code> for
+        <code>index.html</code> or <code>page_image.jpg</code> for
+        <code>page.html</code>.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>root</parameter>: the root path from which pages
+            are included in the feed (defaults to the path of the current
+            page);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>maxItems</parameter>: maximum number of items to
+            include in the feed;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>pathRegex</parameter>: a regular expression to
+            exclude the feed from some pages: if this expression is set, the
+            feed tag will be included only in pages whose path matches the
+            expression.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section id="tags_navigation">
+      <title>Navigation Tags</title>
+
+      <section id="tag_listmenu">
+        <title>listmenu</title>
+
+        <para>Creates a navigation menu using an HTML unordered list.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>path</parameter>: the path used as root for the
+            menu. Defaults to the path of the page to which the theme is
+            applied. There are some special values that can be used with this
+            parameters: <option>root</option> (site root),
+            <option>current</option> (directory of the page) and
+            <option>parent</option> (parent directory). Should you really need
+            to specify a path that is equal to one of these special values,
+            simply put a slash at the beginning (e.g.
+            <option>/current</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>items</parameter>: a comma-separated list of
+            categories of pages to be added to the menu. Possible values are
+            <option>all</option> or any combination of
+            <option>firstlevel</option> (pages in the directory defined by
+            path), <option>lastlevel</option> (pages at the level of the
+            current page), <option>intermediatelevels</option> (all levels
+            between first and last), <option>onpath</option> (pages along the
+            current page path, like breadcrumbs) and <option>children</option>
+            (pages that are children of the current page). The default value
+            is <option>firstlevel,lastlevel,onpath,children</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>current</parameter>: indicates how to display the
+            current page in the menu. Possible values are
+            <option>text</option> (default) and <option>link</option>.</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>style</parameter>: a css style for menu elements
+            (default is no style);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>currentStyle</parameter>: a css style for the
+            current page (default is no style);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>currentPathStyle</parameter>: a css style for
+            pages on path (default is no style);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>allowHiding</parameter>: if
+            <option>true</option>, tells the menu to obey to the hiding
+            settings specified in the <link linkend="page_manager">Page
+            Manager</link>, i.e. hide submenus that are set to be hidden
+            (default <option>false</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>artisteerMarkup</parameter>: if
+            <option>true</option>, adds some markup needed to support
+            artisteer 3.0 menus (default <option>false</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_alibmenu">
+        <title>alibmenu</title>
+
+        <para>Creates a navigation menu using an HTML unordered list and the
+        ALIB script. The same result could be achieved by including the script
+        in the theme and using listmenu with appropriate parameters, but this
+        solution is more straightforward.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>part</parameter>: the part of code. Possible
+            values are <option>head</option> and <option>body</option>. You
+            must use both values (the former within the head tag, the latter
+            within the body tag, where you want to insert the menu);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>orientation</parameter>: the type of menu.
+            Possible values are <option>vertical</option> and
+            <option>horizontal</option>.</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>path</parameter>: the path used as root for the
+            menu. Defaults to the path of the page to which the theme is
+            applied;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>current</parameter>: indicates how to display the
+            current page in the menu. Possible values are
+            <option>text</option> (default) and <option>link</option>.</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>currentPathStyle</parameter>: a css style for
+            pages on path (default is no style);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>allowHiding</parameter>: if
+            <option>true</option>, tells the menu to obey to the hiding
+            settings specified in the <link linkend="page_manager">Page
+            Manager</link>, i.e. hide submenus that are set to be hidden
+            (default <option>true</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_simplemenu">
+        <title>simplemenu</title>
+
+        <para>Creates a simple textual menu, similar to a typical CMS menu
+        (first level + path to current level + current level).</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>path</parameter>: the path used as root for the
+            menu. Defaults to the path of the page to which the theme is
+            applied;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>space</parameter>: the number of pixels used to
+            indent the menu. Default is <option>8</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>bullet</parameter>: the HTML code used as bullet
+            in the menu. Default is <option>&amp;middot;</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>style</parameter>: a css style for menu elements
+            (default is no style);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>expand</parameter>: set this to
+            <option>true</option> to expand the intermediate levels of the
+            menu (by default it is <option>false</option> and only expands the
+            first and last levels).</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>allowHiding</parameter>: defines if the module
+            honours the "hide submenu" option or not. Values are
+            <option>false</option> (default) and <option>true</option>;</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_tigramenu">
+        <title>tigramenu</title>
+
+        <para>Creates a JavaScript menu (using <ulink
+        url="http://www.softcomplex.com/products/tigra_menu/">this free
+        script</ulink>). This script needs to insert some code in the head tag
+        and some in the body tag, so you must call this tag twice in the same
+        page.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>part</parameter>: the part of code. Possible
+            values are <option>head</option> and <option>body</option>. You
+            must use both values (the former within the head tag, the latter
+            within the body tag);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>path</parameter>: the path used as root for the
+            menu. Defaults to the path of the page to which the theme is
+            applied. Use this attribute when <parameter>part</parameter> has
+            the <option>head</option> value;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>placeholder</parameter>: a boolean value to
+            include a transparent image with the size of the menu. This is
+            useful when the layout of the page does not use absolute
+            positioning as the script does. Default is <option>false</option>.
+            Use this attribute olny when <parameter>part</parameter> has the
+            <option>body</option> value.</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>allowHiding</parameter>: defines if the module
+            honours the "hide submenu" option or not. Values are
+            <option>false</option> (default) and <option>true</option>;</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>If you use this tag in a theme, you must include the files
+        <filename>menu.js</filename>, <filename>menu_tpl.js</filename> and
+        <filename>menu.css</filename> in the same directory of the
+        <filename>main.jsp</filename> theme file.
+        <filename>menu_tpl.js</filename> and <filename>menu.css</filename> can
+        be customized to get the desired result, as videly illustrated in the
+        documentation of the script.</para>
+      </section>
+
+      <section id="tag_breadcrumbs">
+        <title>breadcrumbs</title>
+
+        <para>Creates a list of titles/links for all the pages from the site
+        root (included) to the current page (can be excluded).
+        Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>separator</parameter>: the text between elements
+            (default is a space);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>mode</parameter>: the type of breadcrumbs.
+            Possible values are <option>titles</option> (default) and
+            <option>links</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>style</parameter>: a css style for links (default
+            is no style);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>target</parameter>: the target for links (default
+            is no target, hence same window);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>current</parameter>: boolean value to
+            include/exclude the current page (default is
+            <option>true</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>pre</parameter>: a text to be added before the
+            first element. It won't be added if there are no elements at
+            all;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>post</parameter>: a text to be added after the
+            last element. It won't be added if there are no elements at
+            all.</para>
+          </listitem>
+        </itemizedlist>
+
+        <example>
+          <title>The most common breadcrumbs</title>
+
+          <programlisting>&lt;mesh:breadcrumbs mode="links" pre="You are viewing: " separator=" &amp;raquo; " /&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_links">
+        <title>links</title>
+
+        <para>Creates a list of links to pages in the same level (i.e.
+        directory).</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>path</parameter>: the path where to find pages to
+            list (defaults to the path of the current page);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>welcome</parameter>: if <option>true</option>,
+            the welcome page in the directory is included too (default
+            <option>true</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>separator</parameter>: the text between elements
+            (default is a space);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>style</parameter>: a css style for links (default
+            is no style);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>target</parameter>: the target for links (default
+            is no target, hence same window);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>current</parameter>: boolean value to
+            include/exclude the current page (default is
+            <option>true</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>pre</parameter>: a text to be added before the
+            first element. It won't be added if there are no elements at
+            all;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>post</parameter>: a text to be added after the
+            last element. It won't be added if there are no elements at
+            all.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_langmenu">
+        <title>langmenu</title>
+
+        <para>Creates a list of links to available languages in the site.
+        Please note that this feature only works if the site has a specific
+        structure (see <xref linkend="multilingual" />). That menu will allow
+        site visitors to jump to the same page in another language or, if that
+        page is not available, to the home page of the other language. In the
+        last case, if the user has logged in and has required permissions, he
+        will be offered to create the translation on the fly.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>separator</parameter>: the text between elements
+            (default is a space);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>pre</parameter>: a text to be added before the
+            first element. It won't be added if there are no elements at
+            all;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>post</parameter>: a text to be added after the
+            last element. It won't be added if there are no elements at
+            all;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>names</parameter>: if <option>true</option>,
+            language names are shown (default <option>true</option>);</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>flags</parameter>: if <option>true</option>,
+            small flags are shown (default <option>false</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section id="tags_information">
+      <title>Information Tags</title>
+
+      <section id="tag_info">
+        <title>info</title>
+
+        <para>This tag shows some info about the website or the CMS. Values
+        are defined in the Configuration page.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>id</parameter>: indicates which site information
+            must be shown.</para>
+
+            <para>Possible values are <option>name</option> (default),
+            <option>host</option> (or <option>domain</option>),
+            <option>description</option>, <option>keywords</option>,
+            <option>author</option> or <option>authorurl</option>.</para>
+
+            <para>Alternatively, you can retrieve some system info using
+            <option>meshcms</option> to retrieve application name and version
+            info, <option>charset</option> to get the system charset or
+            <option>lang</option> to get the page language.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_user">
+        <title>user</title>
+
+        <para>This tag shows some info about the current user.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>id</parameter>: indicates which user information
+            must be shown. Value can be <option>username</option>,
+            <option>e-mail</option> (or <option>email</option>), or another
+            user detail (<option>salutation</option>, <option>name</option>,
+            <option>surname</option>, <option>company</option>,
+            <option>address</option>, <option>zip</option>,
+            <option>city</option>, <option>state</option>,
+            <option>country</option>, <option>phone_number</option>,
+            <option>fax_number</option>,
+            <option>mobile_phone_number</option>). If
+            <parameter>id</parameter> is not specified, the value displayed
+            depends on what information is available.</para>
+          </listitem>
+        </itemizedlist>
+
+        <example>
+          <title>Welcoming a user when he has logged in</title>
+
+          <programlisting>&lt;mesh:ifuser&gt;Welcome &lt;mesh:user /&gt;!&lt;/mesh:ifuser&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_lastmodified">
+        <title>lastmodified</title>
+
+        <para>Writes the date of the last modification of the current page.
+        Usually this is the last modification time of the HTML file, but some
+        modules can change that value. For example, if the gallery module is
+        used in the page, and an image is newer than the HTML file, its
+        modification time will be used, provided that the module tag is
+        located before this tag in the theme. This means that it is
+        recommended to put this tag at the end of the page.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>date</parameter>: the format of the date.
+            Possible values are <option>normal</option> (default) and
+            <option>full</option>;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>mode</parameter>: since usually it makes no sense
+            to use this tag for server-side pages (e.g. JSPs), you can set
+            this attribute to <option>static</option> (default) to show the
+            date for static files only, or you can use <option>all</option> to
+            always show it;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>pre</parameter>: a text to be added before the
+            date. It won't be added if the date is not shown;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>post</parameter>: a text to be added after the
+            date. It won't be added if the date is not shown;</para>
+          </listitem>
+
+          <listitem>
+            <para><parameter>update</parameter>: if <option>true</option>, the
+            last modification time of the page file will be modified according
+            to the displayed value (default <option>false</option>).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section id="tags_conditional">
+      <title>Conditional Tags</title>
+
+      <section id="tag_iflang">
+        <title>iflang</title>
+
+        <para>This tag can be used to show some html in a particular language
+        only.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>id</parameter>: the code of the desired language
+            (e.g. <option>en</option> for English).</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="tag_ifuser">
+        <title>ifuser, ifnotuser</title>
+
+        <para>These tags mark a part of the page that must be shown only when
+        a user has logged in or not.</para>
+
+        <para>These tags have no attributes.</para>
+
+        <example>
+          <title>Displaying a message to a user</title>
+
+          <programlisting>&lt;mesh:ifuser&gt;Welcome &lt;mesh:user /&gt;!&lt;/mesh:ifuser&gt;
+&lt;mesh:ifnotuser&gt;You are not logged in&lt;/mesh:ifnotuser&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_ifediting">
+        <title>ifediting, ifnotediting</title>
+
+        <para>These tags are used to mark a part of the page that must be
+        shown only when editing or viewing a page.</para>
+
+        <para>These tags have no attributes.</para>
+
+        <para>The <code>ifnotediting</code> tag is mainly used to enclose
+        forms that would otherwise conflict with the main editing form.</para>
+
+        <example>
+          <title>Inserting a search form without conflicting with the MeshCMS
+          editor</title>
+
+          <programlisting>&lt;mesh:ifnotediting&gt;
+ &lt;!-- Search Google --&gt;
+  &lt;center&gt;
+   &lt;FORM method=GET action="http://www.google.com/search"&gt;
+    &lt;input type=hidden name=ie value=UTF-8&gt;
+    &lt;input type=hidden name=oe value=UTF-8&gt;
+    &lt;TABLE bgcolor="#FFFFFF"&gt;&lt;tr&gt;&lt;td&gt;
+     &lt;A HREF="http://www.google.com/"&gt;
+     &lt;IMG SRC="http://www.google.com/logos/Logo_40wht.gif" 
+      border="0" ALT="Google" align="absmiddle"&gt;&lt;/A&gt;
+     &lt;INPUT TYPE=text name=q size=25 maxlength=255 value=""&gt;
+     &lt;INPUT type=submit name=btnG VALUE="Google Search"&gt;
+    &lt;/td&gt;&lt;/tr&gt;&lt;/TABLE&gt;
+   &lt;/FORM&gt;
+  &lt;/center&gt;
+ &lt;!-- Search Google --&gt;
+&lt;/mesh:ifnotediting&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_ifmodule">
+        <title>ifmodule, ifnotmodule</title>
+
+        <para>These tags are used to display a part of the page only when the
+        specified module is active or not.</para>
+
+        <para>Attributes:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><parameter>location</parameter> (required): the name of the
+            module location.</para>
+          </listitem>
+        </itemizedlist>
+
+        <example>
+          <title>Adding some HTML around a module</title>
+
+          <programlisting>&lt;mesh:ifmodule location="bottom"&gt;
+ &lt;div align="center"&gt;Module title&lt;/div&gt;
+ &lt;mesh:module location="bottom" /&gt;
+ &lt;div align="center"&gt;End of module&lt;/div&gt;
+&lt;/mesh:ifmodule&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_ifmailform">
+        <title>ifmailform, ifnotmailform</title>
+
+        <para>These tags are used to display a part of the page only if a
+        recipient has been specified to receive messages from that
+        page.</para>
+
+        <para>These tags have no attributes.</para>
+
+        <example>
+          <title>Adding some HTML around a mail form</title>
+
+          <programlisting>&lt;mesh:ifmailform&gt;
+ &lt;div align="center"&gt;Send a message&lt;/div&gt;
+ &lt;mesh:mailform /&gt;
+&lt;/mesh:ifmailform&gt;</programlisting>
+        </example>
+      </section>
+
+      <section id="tag_ifindexed">
+        <title>ifindexed, ifnotindexed</title>
+
+        <para>These tags detect whether the current page is in the site map or
+        not.</para>
+
+        <para>These tags have no attributes.</para>
+      </section>
+
+      <section id="tag_ifadminpage">
+        <title>ifadminpage, ifnotadminpage</title>
+
+        <para>These tags detect whether the current page is an admin page or
+        not. They are useful when the theme is applied to admin pages.</para>
+
+        <para>These tags have no attributes.</para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Tips</title>
+
+    <para>This is a collection of tips that don't fit into any of the previous
+    chapters.</para>
+
+    <section id="tinymce_config">
+      <title>TinyMCE configuration</title>
+
+      <para>MeshCMS includes TinyMCE with a selection of plugins and a default
+      configuration. If you want to customize TinyMCE, you have two
+      options:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>create your own <filename>tinymce_init.js</filename> file in
+          the CMS directory (which defaults to /meshcms). The default version
+          of that file is contained in
+          <filename>/meshcms/admin/scripts</filename>;</para>
+        </listitem>
+
+        <listitem>
+          <para>use another TinyMCE version, with the plugins you want, by
+          putting it into the CMS directory (e.g.
+          <filename>/meshcms/tiny_mce</filename>).</para>
+        </listitem>
+      </orderedlist>
+
+      <para>You can apply both customizations if you want, i.e. using a
+      different TinyMCE version with your own configuration.</para>
+
+      <para>It is not recommended to replace the TinyMCE version shipped with
+      MeshCMS, nor to change the default configurations, as your changes would
+      be lost when upgrading to a new MeshCMS version.</para>
+    </section>
+
+    <section id="multilingual">
+      <title>Multilingual sites</title>
+
+      <para>Since MeshCMS pages are simple HTML files, a page cannot contain
+      multiple versions of itself, so different languages must be managed
+      separately. Nevertheless, MeshCMS offers some expedients to deal with
+      multiple languages.</para>
+
+      <para>Multilanguage support is based on building identical (or at least
+      similar) trees of pages under pages at the first level that will have
+      the path equal to language codes. If you follow that structure, pages
+      that differ only at the first level will be matched as different
+      versions of the same page.</para>
+
+      <para>To make it easier to understand, let's see an example. Suppose
+      that you have to create a site in two languages: English and Italian.
+      Here are the steps to follow:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>start with a welcome page that offers a language choice, or
+          enable automatic home page redirection in the <link
+          linkend="configure">configuration</link>;</para>
+        </listitem>
+
+        <listitem>
+          <para>create a directory for each language, making sure that the
+          each directory is named after a language code (i.e. <code>en</code>
+          and <code>it</code> in our example);</para>
+        </listitem>
+
+        <listitem>
+          <para>in your theme, use the <link
+          linkend="tag_setlocale">setlocale</link> tag without specifying the
+          <parameter>value</parameter> attribute. This way the locale code
+          will be taken from the url, and will be <code>en</code> or
+          <code>it</code> according to the page that is currently displayed
+          (you can use the <option>defaultValue</option> attribute to set a
+          default);</para>
+
+          <screenshot>
+            <screeninfo>A directory for each language has been
+            created.</screeninfo>
+
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="ml_file_manager.png" />
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </listitem>
+
+        <listitem>
+          <para>apply the theme to both home pages, so navigation menus will
+          start from the language root instead of the site root;</para>
+
+          <screenshot>
+            <screeninfo>The site theme has been applied to both English and
+            Italian home pages. The same or another theme could also be
+            applied to the root page if wanted.</screeninfo>
+
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="ml_page_manager.png" />
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </listitem>
+
+        <listitem>
+          <para>finally, use the <link linkend="tag_langmenu">langmenu</link>
+          tag to add a menu of languages to your theme (you could also use a
+          customized one, but this tool is handy since it points directly to
+          the translated page if available).</para>
+        </listitem>
+      </orderedlist>
+
+      <para>This way you get a site that separates languages correctly. You
+      could also put common images in a directory at the root level (e.g.
+      <filename>/images</filename>).</para>
+
+      <screenshot>
+        <screeninfo>Navigation menus in the English site don't show Italian
+        pages.</screeninfo>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="ml_eng_home.png" />
+          </imageobject>
+        </mediaobject>
+      </screenshot>
+    </section>
+
+    <section>
+      <title>Publish a Sitemap</title>
+
+      <para>MeshCMS generates an XML sitemap that is compatible with the
+      Sitemap protocol used by Google. The sitemap is published at the URL
+      <uri>http://www.yoursite.com/meshcms_sitemap.xml</uri>. You can try it
+      on your local installation at
+      <uri>http://localhost:8080/meshcms/meshcms_sitemap.xml</uri>.</para>
+    </section>
+  </chapter>
+</book>
